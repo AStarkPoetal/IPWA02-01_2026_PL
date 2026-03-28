@@ -16,7 +16,7 @@ public class LoginBean implements Serializable {
     public String login() {
 
         // IDEIGLENES LOGIN (később adatbázis lesz)
-        if (email.equals("test@test.com") && password.equals("12345")) {
+        if ("test@test.com".equals(email) && "12345".equals(password)) {
             loggedIn = true;
             return "dashboard.xhtml?faces-redirect=true";
         }

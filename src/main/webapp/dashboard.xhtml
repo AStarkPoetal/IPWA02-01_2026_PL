@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="jakarta.faces.html">
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
 
 <h:head>
     <title>Dashboard</title>
@@ -10,6 +11,12 @@
 
     <h:form>
         <h2>Require4Testing Dashboard</h2>
+        <h:panelGroup rendered="#{loginBean.currentUser != null}">
+            <h:outputText value="Logged in as: #{loginBean.currentUser.name} (#{loginBean.currentUser.role})" />
+            <br/>
+            <h:commandButton value="Logout" action="#{loginBean.logout}" />
+            <br/><br/>
+        </h:panelGroup>
 
         <h:commandButton value="Requirement anlegen"
                          action="#{dashboardBean.showPanel('requirement')}" />
@@ -33,23 +40,242 @@
         </h:panelGroup>
 
         <h:panelGroup rendered="#{dashboardBean.activePanel == 'requirement'}">
-            <h:outputText value="Requirement-Panel aktiv." />
+            <h3>Requirements</h3>
+
+            <h:panelGrid columns="2">
+                <h:outputLabel value="Name:" for="requirementName" />
+                <h:inputText id="requirementName" value="#{requirementBean.name}" />
+
+                <h:outputLabel value="Priority:" for="requirementPriority" />
+                <h:selectOneMenu id="requirementPriority" value="#{requirementBean.priority}">
+                    <f:selectItem itemLabel="Select priority" itemValue="" />
+                    <f:selectItem itemLabel="Must" itemValue="M" />
+                    <f:selectItem itemLabel="Should" itemValue="S" />
+                    <f:selectItem itemLabel="Could" itemValue="C" />
+                    <f:selectItem itemLabel="Won't" itemValue="W" />
+                </h:selectOneMenu>
+            </h:panelGrid>
+
+            <br/>
+            <h:commandButton value="Create Requirement" action="#{requirementBean.createRequirement}" />
+
+            <h4>Requirement List</h4>
+            <h:dataTable value="#{requirementBean.requirements}" var="requirement" border="1"
+                         rendered="#{not empty requirementBean.requirements}">
+                <h:column>
+                    <f:facet name="header">ID</f:facet>
+                    #{requirement.id}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Name</f:facet>
+                    #{requirement.name}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Priority</f:facet>
+                    #{requirement.priority}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Status</f:facet>
+                    #{requirement.status}
+                </h:column>
+            </h:dataTable>
         </h:panelGroup>
 
         <h:panelGroup rendered="#{dashboardBean.activePanel == 'testcase'}">
-            <h:outputText value="TestCase-Panel aktiv." />
+            <h3>Test Cases</h3>
+
+            <h:panelGrid columns="2">
+                <h:outputLabel value="Name:" for="testCaseName" />
+                <h:inputText id="testCaseName" value="#{testCaseBean.name}" />
+
+                <h:outputLabel value="Description:" for="testCaseDescription" />
+                <h:inputTextarea id="testCaseDescription" value="#{testCaseBean.description}" rows="3" cols="30" />
+
+                <h:outputLabel value="Expected Result:" for="testCaseExpectedResult" />
+                <h:inputTextarea id="testCaseExpectedResult" value="#{testCaseBean.expectedResult}" rows="3" cols="30" />
+
+                <h:outputLabel value="Requirement:" for="testCaseRequirement" />
+                <h:selectOneMenu id="testCaseRequirement" value="#{testCaseBean.selectedRequirementId}">
+                    <f:selectItem itemLabel="Select requirement" itemValue="#{null}" />
+                    <f:selectItems value="#{testCaseBean.availableRequirements}"
+                                   var="requirement"
+                                   itemValue="#{requirement.id}"
+                                   itemLabel="#{requirement.name}" />
+                </h:selectOneMenu>
+            </h:panelGrid>
+
+            <br/>
+            <h:commandButton value="Create TestCase" action="#{testCaseBean.createTestCase}" />
+
+            <h4>TestCase List</h4>
+            <h:dataTable value="#{testCaseBean.testCases}" var="testCase" border="1"
+                         rendered="#{not empty testCaseBean.testCases}">
+                <h:column>
+                    <f:facet name="header">ID</f:facet>
+                    #{testCase.id}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Name</f:facet>
+                    #{testCase.name}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Requirement</f:facet>
+                    #{testCase.requirement != null ? testCase.requirement.name : '-'}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Expected Result</f:facet>
+                    #{testCase.expectedResult}
+                </h:column>
+            </h:dataTable>
         </h:panelGroup>
 
         <h:panelGroup rendered="#{dashboardBean.activePanel == 'test'}">
-            <h:outputText value="Test-Panel aktiv." />
+            <h3>Tests</h3>
+
+            <h:panelGrid columns="2">
+                <h:outputLabel value="Name:" for="testName" />
+                <h:inputText id="testName" value="#{testBean.name}" />
+
+                <h:outputLabel value="Status:" for="testStatus" />
+                <h:selectOneMenu id="testStatus" value="#{testBean.status}">
+                    <f:selectItem itemLabel="Open" itemValue="open" />
+                    <f:selectItem itemLabel="In Progress" itemValue="in_progress" />
+                    <f:selectItem itemLabel="Done" itemValue="done" />
+                </h:selectOneMenu>
+            </h:panelGrid>
+
+            <br/>
+            <h:commandButton value="Create Test" action="#{testBean.createTest}" />
+
+            <h4>Assign TestCase To Test</h4>
+            <h:panelGrid columns="2">
+                <h:outputLabel value="Test:" for="assignTest" />
+                <h:selectOneMenu id="assignTest" value="#{testBean.selectedTestId}">
+                    <f:selectItem itemLabel="Select test" itemValue="#{null}" />
+                    <f:selectItems value="#{testBean.tests}" var="test"
+                                   itemValue="#{test.id}" itemLabel="#{test.name}" />
+                </h:selectOneMenu>
+
+                <h:outputLabel value="TestCase:" for="assignTestCase" />
+                <h:selectOneMenu id="assignTestCase" value="#{testBean.selectedTestCaseId}">
+                    <f:selectItem itemLabel="Select testcase" itemValue="#{null}" />
+                    <f:selectItems value="#{testBean.availableTestCases}" var="availableTestCase"
+                                   itemValue="#{availableTestCase.id}" itemLabel="#{availableTestCase.name}" />
+                </h:selectOneMenu>
+            </h:panelGrid>
+
+            <br/>
+            <h:commandButton value="Assign TestCase" action="#{testBean.assignSelectedTestCase}" />
+
+            <h4>Test List</h4>
+            <h:dataTable value="#{testBean.tests}" var="test" border="1"
+                         rendered="#{not empty testBean.tests}">
+                <h:column>
+                    <f:facet name="header">ID</f:facet>
+                    #{test.id}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Name</f:facet>
+                    #{test.name}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Status</f:facet>
+                    #{test.status}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Assigned TestCases</f:facet>
+                    #{test.testCases.size()}
+                </h:column>
+            </h:dataTable>
         </h:panelGroup>
 
         <h:panelGroup rendered="#{dashboardBean.activePanel == 'report'}">
-            <h:outputText value="TestReport-Panel aktiv." />
+            <h3>Test Reports</h3>
+
+            <h:panelGrid columns="2">
+                <h:outputLabel value="Name:" for="reportName" />
+                <h:inputText id="reportName" value="#{testReportBean.name}" />
+
+                <h:outputLabel value="Status:" for="reportStatus" />
+                <h:selectOneMenu id="reportStatus" value="#{testReportBean.status}">
+                    <f:selectItem itemLabel="Failed" itemValue="failed" />
+                    <f:selectItem itemLabel="Passed" itemValue="passed" />
+                </h:selectOneMenu>
+
+                <h:outputLabel value="Test:" for="reportTest" />
+                <h:selectOneMenu id="reportTest" value="#{testReportBean.selectedTestId}">
+                    <f:selectItem itemLabel="Select test" itemValue="#{null}" />
+                    <f:selectItems value="#{testReportBean.availableTests}" var="test"
+                                   itemValue="#{test.id}" itemLabel="#{test.name}" />
+                </h:selectOneMenu>
+            </h:panelGrid>
+
+            <br/>
+            <h:commandButton value="Create TestReport" action="#{testReportBean.createTestReport}" />
+
+            <h4>Report List</h4>
+            <h:dataTable value="#{testReportBean.testReports}" var="report" border="1"
+                         rendered="#{not empty testReportBean.testReports}">
+                <h:column>
+                    <f:facet name="header">ID</f:facet>
+                    #{report.id}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Name</f:facet>
+                    #{report.name}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Status</f:facet>
+                    #{report.status}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Test</f:facet>
+                    #{report.test != null ? report.test.name : '-'}
+                </h:column>
+            </h:dataTable>
         </h:panelGroup>
 
         <h:panelGroup rendered="#{dashboardBean.activePanel == 'task'}">
-            <h:outputText value="Task-Panel aktiv." />
+            <h3>Tasks</h3>
+
+            <h:panelGrid columns="2">
+                <h:outputLabel value="Name:" for="taskName" />
+                <h:inputText id="taskName" value="#{taskBean.name}" />
+
+                <h:outputLabel value="Description:" for="taskDescription" />
+                <h:inputTextarea id="taskDescription" value="#{taskBean.description}" rows="3" cols="30" />
+
+                <h:outputLabel value="Status:" for="taskStatus" />
+                <h:selectOneMenu id="taskStatus" value="#{taskBean.status}">
+                    <f:selectItem itemLabel="Open" itemValue="open" />
+                    <f:selectItem itemLabel="In Progress" itemValue="in_progress" />
+                    <f:selectItem itemLabel="Done" itemValue="done" />
+                </h:selectOneMenu>
+            </h:panelGrid>
+
+            <br/>
+            <h:commandButton value="Create Task" action="#{taskBean.createTask}" />
+
+            <h4>Task List</h4>
+            <h:dataTable value="#{taskBean.tasks}" var="task" border="1"
+                         rendered="#{not empty taskBean.tasks}">
+                <h:column>
+                    <f:facet name="header">ID</f:facet>
+                    #{task.id}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Name</f:facet>
+                    #{task.name}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Description</f:facet>
+                    #{task.description}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Status</f:facet>
+                    #{task.status}
+                </h:column>
+            </h:dataTable>
         </h:panelGroup>
 
     </h:form>

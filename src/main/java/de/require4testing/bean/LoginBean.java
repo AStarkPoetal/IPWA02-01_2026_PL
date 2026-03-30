@@ -1,5 +1,6 @@
 package de.require4testing.bean;
 
+import de.require4testing.model.User;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
@@ -12,12 +13,14 @@ public class LoginBean implements Serializable {
     private String password;
 
     private boolean loggedIn = false;
+    private User currentUser;
 
     public String login() {
 
         // IDEIGLENES LOGIN (később adatbázis lesz)
         if ("test@test.com".equals(email) && "12345".equals(password)) {
             loggedIn = true;
+            currentUser = new User("Test User", "test@test.com", "12345", "TM");
             return "dashboard.xhtml?faces-redirect=true";
         }
 
@@ -26,6 +29,7 @@ public class LoginBean implements Serializable {
 
     public String logout() {
         loggedIn = false;
+        currentUser = null;
         return "login.xhtml?faces-redirect=true";
     }
 
@@ -49,5 +53,9 @@ public class LoginBean implements Serializable {
 
     public boolean isLoggedIn() {
         return loggedIn;
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
     }
 }

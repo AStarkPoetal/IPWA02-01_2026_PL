@@ -1,15 +1,43 @@
 package de.require4testing.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "Test")
 public class Test {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     private int id;
+
+    @Column(name = "Name", nullable = false, length = 30)
     private String name;
+
+    @Column(name = "Status", nullable = false, length = 12)
     private String status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Created_by")
     private User createdBy;
+
+    @OneToMany(mappedBy = "test")
     private List<TestCase> testCases = new ArrayList<>();
+
+    @OneToMany(mappedBy = "test")
+    private List<TestReport> testReports = new ArrayList<>();
 
     public Test() {
     }
@@ -59,5 +87,13 @@ public class Test {
 
     public void setTestCases(List<TestCase> testCases) {
         this.testCases = testCases;
+    }
+
+    public List<TestReport> getTestReports() {
+        return testReports;
+    }
+
+    public void setTestReports(List<TestReport> testReports) {
+        this.testReports = testReports;
     }
 }

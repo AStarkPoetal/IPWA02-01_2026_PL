@@ -1,32 +1,56 @@
 package de.require4testing.bean;
 
 import de.require4testing.model.Requirement;
+import de.require4testing.service.RequirementService;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @Named
 @SessionScoped
 public class RequirementBean implements Serializable {
 
+    private final RequirementService requirementService = new RequirementService();
+
     private String name;
     private String priority;
     private String status = "new";
 
-    private int nextId = 1;
-
-    private final List<Requirement> requirements = new ArrayList<>();
-
     public void createRequirement() {
-        Requirement requirement = new Requirement(nextId++, name, priority, status);
-        requirements.add(requirement);
+        if (name == null || name.isBlank()) {
+            addErrorMessage("Requirement name is required.");
+            return;
+        }
+
+        if (priority == null || priority.isBlank()) {
+            addErrorMessage("Requirement priority is required.");
+            return;
+        }
+
+        Requirement requirement = new Requirement();
+        requirement.setName(name);
+        requirement.setPriority(priority);
+        requirement.setStatus(status);
+
+        requirementService.create(requirement);
 
         name = "";
         priority = "";
         status = "new";
+
+        addInfoMessage("Requirement created successfully.");
+    }
+
+    private void addErrorMessage(String message) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, message, null));
+    }
+
+    private void addInfoMessage(String message) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, message, null));
     }
 
     public String getName() {
@@ -54,6 +78,6 @@ public class RequirementBean implements Serializable {
     }
 
     public List<Requirement> getRequirements() {
-        return requirements;
+        return requirementService.findAll();
     }
 }

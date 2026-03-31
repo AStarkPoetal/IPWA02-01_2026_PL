@@ -2,39 +2,49 @@ package de.require4testing.bean;
 
 import de.require4testing.model.Test;
 import de.require4testing.model.TestCase;
+import de.require4testing.service.TestCaseService;
+import de.require4testing.service.TestService;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @Named
 @SessionScoped
 public class TestBean implements Serializable {
 
+    private final TestService testService = new TestService();
+    private final TestCaseService testCaseService = new TestCaseService();
+
     private String name;
     private String status = "open";
     private Integer selectedTestId;
     private Integer selectedTestCaseId;
 
-    private int nextId = 1;
-
-    private final List<Test> tests = new ArrayList<>();
-
     @Inject
     private LoginBean loginBean;
 
-    @Inject
-    private TestCaseBean testCaseBean;
-
     public void createTest() {
-        Test test = new Test(nextId++, name, status, loginBean.getCurrentUser());
-        tests.add(test);
+        if (name == null || name.isBlank()) {
+            addErrorMessage("Test name is required.");
+            return;
+        }
+
+        Test test = new Test();
+        test.setName(name);
+        test.setStatus(status);
+        test.setCreatedBy(loginBean.getCurrentUser());
+
+        testService.create(test);
 
         name = "";
         status = "open";
+
+        addInfoMessage("Test created successfully.");
     }
 
     public void updateStatus(Test test, String newStatus) {
@@ -47,42 +57,44 @@ public class TestBean implements Serializable {
         Test selectedTest = findTestById(selectedTestId);
         TestCase selectedTestCase = findTestCaseById(selectedTestCaseId);
 
-        if (selectedTest != null && selectedTestCase != null && !selectedTest.getTestCases().contains(selectedTestCase)) {
-            selectedTest.getTestCases().add(selectedTestCase);
-            selectedTestCase.setTest(selectedTest);
+        if (selectedTest == null) {
+            addErrorMessage("A test must be selected.");
+            return;
         }
+
+        if (selectedTestCase == null) {
+            addErrorMessage("A test case must be selected.");
+            return;
+        }
+
+        if (!selectedTest.getTestCases().contains(selectedTestCase)) {
+            selectedTestCase.setTest(selectedTest);
+            testCaseService.update(selectedTestCase);
+            addInfoMessage("TestCase assigned successfully.");
+            return;
+        }
+
+        addErrorMessage("This TestCase is already assigned to the selected Test.");
     }
 
     public List<TestCase> getAvailableTestCases() {
-        return testCaseBean.getTestCases();
+        return testCaseService.findAll();
     }
 
     private Test findTestById(Integer testId) {
-        if (testId == null) {
-            return null;
-        }
-
-        for (Test test : tests) {
-            if (test.getId() == testId) {
-                return test;
-            }
-        }
-
-        return null;
+        return testService.findById(testId);
     }
 
     private TestCase findTestCaseById(Integer testCaseId) {
-        if (testCaseId == null) {
-            return null;
-        }
+        return testCaseService.findById(testCaseId);
+    }
 
-        for (TestCase testCase : testCaseBean.getTestCases()) {
-            if (testCase.getId() == testCaseId) {
-                return testCase;
-            }
-        }
+    private void addErrorMessage(String message) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, message, null));
+    }
 
-        return null;
+    private void addInfoMessage(String message) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, message, null));
     }
 
     public String getName() {
@@ -118,6 +130,6 @@ public class TestBean implements Serializable {
     }
 
     public List<Test> getTests() {
-        return tests;
+        return testService.findAll();
     }
 }

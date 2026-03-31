@@ -1,13 +1,17 @@
 package de.require4testing.bean;
 
 import de.require4testing.model.User;
+import de.require4testing.service.UserService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
+
 import java.io.Serializable;
 
 @Named
 @SessionScoped
 public class LoginBean implements Serializable {
+
+    private final UserService userService = new UserService();
 
     private String email;
     private String password;
@@ -17,10 +21,9 @@ public class LoginBean implements Serializable {
 
     public String login() {
 
-        // IDEIGLENES LOGIN (később adatbázis lesz)
         if ("test@test.com".equals(email) && "12345".equals(password)) {
             loggedIn = true;
-            currentUser = new User("Test User", "test@test.com", "12345", "TM");
+            currentUser = userService.findOrCreateDemoUser();
             return "dashboard.xhtml?faces-redirect=true";
         }
 

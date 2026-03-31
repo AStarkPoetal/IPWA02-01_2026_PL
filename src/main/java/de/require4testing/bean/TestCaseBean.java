@@ -3,17 +3,21 @@ package de.require4testing.bean;
 import de.require4testing.model.Requirement;
 import de.require4testing.model.Test;
 import de.require4testing.model.TestCase;
+import de.require4testing.service.TestCaseService;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @Named
 @SessionScoped
 public class TestCaseBean implements Serializable {
+
+    private final TestCaseService testCaseService = new TestCaseService();
 
     private String name;
     private String description;
@@ -21,24 +25,48 @@ public class TestCaseBean implements Serializable {
     private Integer selectedRequirementId;
     private Integer selectedTestId;
 
-    private int nextId = 1;
-
-    private final List<TestCase> testCases = new ArrayList<>();
-
     @Inject
     private RequirementBean requirementBean;
 
     public void createTestCase() {
+        if (name == null || name.isBlank()) {
+            addErrorMessage("TestCase name is required.");
+            return;
+        }
+
+        if (description == null || description.isBlank()) {
+            addErrorMessage("TestCase description is required.");
+            return;
+        }
+
+        if (expectedResult == null || expectedResult.isBlank()) {
+            addErrorMessage("Expected result is required.");
+            return;
+        }
+
         Requirement selectedRequirement = findRequirementById(selectedRequirementId);
+        if (selectedRequirement == null) {
+            addErrorMessage("A requirement must be selected.");
+            return;
+        }
+
         Test selectedTest = null;
-        TestCase testCase = new TestCase(nextId++, name, description, expectedResult, selectedRequirement, selectedTest);
-        testCases.add(testCase);
+        TestCase testCase = new TestCase();
+        testCase.setName(name);
+        testCase.setDescription(description);
+        testCase.setExpectedResult(expectedResult);
+        testCase.setRequirement(selectedRequirement);
+        testCase.setTest(selectedTest);
+
+        testCaseService.create(testCase);
 
         name = "";
         description = "";
         expectedResult = "";
         selectedRequirementId = null;
         selectedTestId = null;
+
+        addInfoMessage("TestCase created successfully.");
     }
 
     public List<Requirement> getAvailableRequirements() {
@@ -57,6 +85,14 @@ public class TestCaseBean implements Serializable {
         }
 
         return null;
+    }
+
+    private void addErrorMessage(String message) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, message, null));
+    }
+
+    private void addInfoMessage(String message) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, message, null));
     }
 
     public String getName() {
@@ -100,6 +136,6 @@ public class TestCaseBean implements Serializable {
     }
 
     public List<TestCase> getTestCases() {
-        return testCases;
+        return testCaseService.findAll();
     }
 }

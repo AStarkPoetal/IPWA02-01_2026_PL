@@ -3,6 +3,8 @@ package de.require4testing.bean;
 import de.require4testing.model.Test;
 import de.require4testing.model.TestReport;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
@@ -29,13 +31,25 @@ public class TestReportBean implements Serializable {
     private TestBean testBean;
 
     public void createTestReport() {
+        if (name == null || name.isBlank()) {
+            addErrorMessage("Test report name is required.");
+            return;
+        }
+
         Test selectedTest = findTestById(selectedTestId);
+        if (selectedTest == null) {
+            addErrorMessage("A test must be selected.");
+            return;
+        }
+
         TestReport testReport = new TestReport(nextId++, name, status, selectedTest, loginBean.getCurrentUser());
         testReports.add(testReport);
 
         name = "";
         status = "failed";
         selectedTestId = null;
+
+        addInfoMessage("TestReport created successfully.");
     }
 
     public void updateStatus(TestReport testReport, String newStatus) {
@@ -60,6 +74,14 @@ public class TestReportBean implements Serializable {
         }
 
         return null;
+    }
+
+    private void addErrorMessage(String message) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, message, null));
+    }
+
+    private void addInfoMessage(String message) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, message, null));
     }
 
     public String getName() {

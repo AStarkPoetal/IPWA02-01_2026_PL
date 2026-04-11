@@ -12,13 +12,15 @@
 
         <h2>Login</h2>
 
+        <h:messages globalOnly="true" infoStyle="color: green;" errorStyle="color: red;" />
+
         <h:panelGrid columns="2">
 
             <h:outputLabel value="Email:" />
-            <h:inputText value="#{loginBean.email}" />
+            <h:inputText value="#{loginBean.email}" required="true" requiredMessage="Email is required." />
 
             <h:outputLabel value="Password:" />
-            <h:inputSecret value="#{loginBean.password}" />
+            <h:inputSecret value="#{loginBean.password}" required="true" requiredMessage="Password is required." />
 
         </h:panelGrid>
 

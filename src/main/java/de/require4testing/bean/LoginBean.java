@@ -3,6 +3,8 @@ package de.require4testing.bean;
 import de.require4testing.model.User;
 import de.require4testing.service.UserService;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
@@ -18,21 +20,30 @@ public class LoginBean implements Serializable {
 
     private boolean loggedIn = false;
     private User currentUser;
+    private Integer currentUserId;
 
     public String login() {
-
-        if ("test@test.com".equals(email) && "12345".equals(password)) {
+        User authenticatedUser = userService.authenticate(email, password);
+        if (authenticatedUser != null) {
             loggedIn = true;
-            currentUser = userService.findOrCreateDemoUser();
+            currentUser = authenticatedUser;
+            currentUserId = authenticatedUser.getId();
+            password = "";
             return "dashboard.xhtml?faces-redirect=true";
         }
 
+        loggedIn = false;
+        currentUser = null;
+        currentUserId = null;
+        addErrorMessage("Invalid email or password.");
         return null;
     }
 
     public String logout() {
         loggedIn = false;
         currentUser = null;
+        currentUserId = null;
+        password = "";
         return "login.xhtml?faces-redirect=true";
     }
 
@@ -59,9 +70,49 @@ public class LoginBean implements Serializable {
     }
 
     public User getCurrentUser() {
-        if (currentUser == null && loggedIn) {
-            currentUser = userService.findOrCreateDemoUser();
+        if (currentUser == null && loggedIn && currentUserId != null) {
+            currentUser = userService.findById(currentUserId);
         }
         return currentUser;
+    }
+
+    public boolean hasRole(String... roles) {
+        User user = getCurrentUser();
+        if (user == null || roles == null) {
+            return false;
+        }
+
+        for (String role : roles) {
+            if (role != null && role.equals(user.getRole())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean canAccessRequirement() {
+        return hasRole("TM", "RE");
+    }
+
+    public boolean canAccessTestCase() {
+        return hasRole("TM", "RE", "TFE");
+    }
+
+    public boolean canAccessTest() {
+        return hasRole("TM", "TFE", "T");
+    }
+
+    public boolean canAccessReport() {
+        return hasRole("TM", "TFE", "T");
+    }
+
+    public boolean canAccessTask() {
+        return hasRole("TM", "TFE", "T");
+    }
+
+    private void addErrorMessage(String message) {
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, message, null));
     }
 }

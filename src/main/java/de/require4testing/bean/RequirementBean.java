@@ -5,6 +5,7 @@ import de.require4testing.service.RequirementService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
@@ -21,7 +22,15 @@ public class RequirementBean implements Serializable {
     private String status = "new";
     private Integer editingRequirementId;
 
+    @Inject
+    private LoginBean loginBean;
+
     public void createRequirement() {
+        if (!loginBean.canAccessRequirement()) {
+            addErrorMessage("You are not allowed to manage requirements.");
+            return;
+        }
+
         if (name == null || name.isBlank()) {
             addErrorMessage("Requirement name is required.");
             return;
@@ -53,6 +62,11 @@ public class RequirementBean implements Serializable {
     }
 
     public void editRequirement(Requirement requirement) {
+        if (!loginBean.canAccessRequirement()) {
+            addErrorMessage("You are not allowed to manage requirements.");
+            return;
+        }
+
         if (requirement == null) {
             return;
         }
@@ -71,6 +85,11 @@ public class RequirementBean implements Serializable {
     }
 
     public void deleteRequirement(Requirement requirement) {
+        if (!loginBean.canAccessRequirement()) {
+            addErrorMessage("You are not allowed to manage requirements.");
+            return;
+        }
+
         if (requirement == null) {
             return;
         }

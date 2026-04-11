@@ -108,6 +108,7 @@ public class TestCaseService {
             }
 
             managedTestCase.setTest(managedTest);
+            moveTestToInProgress(managedTest);
             entityManager.getTransaction().commit();
             return true;
         } finally {
@@ -154,6 +155,16 @@ public class TestCaseService {
 
         if ("new".equals(requirement.getStatus())) {
             requirement.setStatus("in_progress");
+        }
+    }
+
+    private void moveTestToInProgress(Test test) {
+        if (test == null || test.getStatus() == null) {
+            return;
+        }
+
+        if ("open".equals(test.getStatus())) {
+            test.setStatus("in_progress");
         }
     }
 }

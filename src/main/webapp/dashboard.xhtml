@@ -18,7 +18,7 @@
                         <p>Manage requirements, test cases, tests, reports and tasks from one place.</p>
                     </div>
 
-                    <h:panelGroup rendered="#{loginBean.currentUser != null}" styleClass="user-box">
+                    <h:panelGroup rendered="#{loginBean.loggedIn}" styleClass="user-box">
                         <strong>Active User</strong>
                         <h:outputText value="#{loginBean.currentUser.name}" />
                         <br/>
@@ -31,11 +31,16 @@
 
                 <div class="nav-bar">
                     <h:commandButton value="Home" action="#{dashboardBean.showPanel('home')}" styleClass="nav-button" immediate="true" />
-                    <h:commandButton value="Requirements" action="#{dashboardBean.showPanel('requirement')}" styleClass="nav-button" immediate="true" />
-                    <h:commandButton value="Test Cases" action="#{dashboardBean.showPanel('testcase')}" styleClass="nav-button" immediate="true" />
-                    <h:commandButton value="Tests" action="#{dashboardBean.showPanel('test')}" styleClass="nav-button" immediate="true" />
-                    <h:commandButton value="Reports" action="#{dashboardBean.showPanel('report')}" styleClass="nav-button" immediate="true" />
-                    <h:commandButton value="Tasks" action="#{dashboardBean.showPanel('task')}" styleClass="nav-button" immediate="true" />
+                    <h:commandButton value="Requirements" action="#{dashboardBean.showPanel('requirement')}" styleClass="nav-button" immediate="true"
+                                     rendered="#{loginBean.canAccessRequirement()}" />
+                    <h:commandButton value="Test Cases" action="#{dashboardBean.showPanel('testcase')}" styleClass="nav-button" immediate="true"
+                                     rendered="#{loginBean.canAccessTestCase()}" />
+                    <h:commandButton value="Tests" action="#{dashboardBean.showPanel('test')}" styleClass="nav-button" immediate="true"
+                                     rendered="#{loginBean.canAccessTest()}" />
+                    <h:commandButton value="Reports" action="#{dashboardBean.showPanel('report')}" styleClass="nav-button" immediate="true"
+                                     rendered="#{loginBean.canAccessReport()}" />
+                    <h:commandButton value="Tasks" action="#{dashboardBean.showPanel('task')}" styleClass="nav-button" immediate="true"
+                                     rendered="#{loginBean.canAccessTask()}" />
                 </div>
             </section>
 
@@ -68,7 +73,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{dashboardBean.activePanel == 'requirement'}">
+                <h:panelGroup rendered="#{dashboardBean.activePanel == 'requirement' and loginBean.canAccessRequirement()}">
                     <h3>Requirements</h3>
                     <p class="section-intro">Create new requirements and review the current list.</p>
 
@@ -139,7 +144,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{dashboardBean.activePanel == 'testcase'}">
+                <h:panelGroup rendered="#{dashboardBean.activePanel == 'testcase' and loginBean.canAccessTestCase()}">
                     <h3>Test Cases</h3>
                     <p class="section-intro">Create test cases and bind them to existing requirements.</p>
 
@@ -218,7 +223,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{dashboardBean.activePanel == 'test'}">
+                <h:panelGroup rendered="#{dashboardBean.activePanel == 'test' and loginBean.canAccessTest()}">
                     <h3>Tests</h3>
                     <p class="section-intro">Create tests and assign available test cases to them.</p>
 
@@ -289,12 +294,6 @@
                                 <h:column>
                                     <f:facet name="header">Action</f:facet>
                                     <div class="button-row">
-                                        <h:commandButton value="In Progress" action="#{testBean.updateStatus(test, 'in_progress')}" styleClass="secondary-button">
-                                            <f:ajax execute="@this" render="testListCard" />
-                                        </h:commandButton>
-                                        <h:commandButton value="Done" action="#{testBean.updateStatus(test, 'done')}" styleClass="secondary-button">
-                                            <f:ajax execute="@this" render="testListCard" />
-                                        </h:commandButton>
                                         <h:commandButton value="Delete" action="#{testBean.deleteTest(test)}" styleClass="secondary-button">
                                             <f:ajax execute="@this" render="testListCard assignTestCard" />
                                         </h:commandButton>
@@ -305,7 +304,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{dashboardBean.activePanel == 'report'}">
+                <h:panelGroup rendered="#{dashboardBean.activePanel == 'report' and loginBean.canAccessReport()}">
                     <h3>Test Reports</h3>
                     <p class="section-intro">Capture the result of a test execution and keep a simple report list.</p>
 
@@ -369,7 +368,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{dashboardBean.activePanel == 'task'}">
+                <h:panelGroup rendered="#{dashboardBean.activePanel == 'task' and loginBean.canAccessTask()}">
                     <h3>Tasks</h3>
                     <p class="section-intro">Track practical work items and their progress.</p>
 

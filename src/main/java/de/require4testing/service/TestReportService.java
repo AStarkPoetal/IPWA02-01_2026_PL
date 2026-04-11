@@ -28,6 +28,7 @@ public class TestReportService {
             }
 
             entityManager.persist(testReport);
+            markTestAsDone(entityManager, testReport);
             markCoveredRequirementsAsDone(entityManager, testReport);
             entityManager.getTransaction().commit();
         } finally {
@@ -80,6 +81,17 @@ public class TestReportService {
             return false;
         } finally {
             entityManager.close();
+        }
+    }
+
+    private void markTestAsDone(EntityManager entityManager, TestReport testReport) {
+        if (!"passed".equals(testReport.getStatus()) || testReport.getTest() == null) {
+            return;
+        }
+
+        Test managedTest = entityManager.find(Test.class, testReport.getTest().getId());
+        if (managedTest != null) {
+            managedTest.setStatus("done");
         }
     }
 

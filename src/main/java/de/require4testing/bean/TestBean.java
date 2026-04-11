@@ -28,6 +28,11 @@ public class TestBean implements Serializable {
     private LoginBean loginBean;
 
     public void createTest() {
+        if (!loginBean.canAccessTest()) {
+            addErrorMessage("You are not allowed to manage tests.");
+            return;
+        }
+
         if (name == null || name.isBlank()) {
             addErrorMessage("Test name is required.");
             return;
@@ -44,14 +49,12 @@ public class TestBean implements Serializable {
         name = "";
     }
 
-    public void updateStatus(Test test, String newStatus) {
-        if (test != null) {
-            testService.updateStatus(test.getId(), newStatus);
-            addInfoMessage("Test status updated.");
-        }
-    }
-
     public void assignSelectedTestCase() {
+        if (!loginBean.canAccessTest()) {
+            addErrorMessage("You are not allowed to manage tests.");
+            return;
+        }
+
         if (selectedTestId == null) {
             addErrorMessage("A test must be selected.");
             return;
@@ -72,6 +75,11 @@ public class TestBean implements Serializable {
     }
 
     public void deleteTest(Test test) {
+        if (!loginBean.canAccessTest()) {
+            addErrorMessage("You are not allowed to manage tests.");
+            return;
+        }
+
         if (test == null) {
             return;
         }

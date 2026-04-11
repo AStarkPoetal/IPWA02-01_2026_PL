@@ -25,6 +25,11 @@ public class TaskBean implements Serializable {
     private LoginBean loginBean;
 
     public void createTask() {
+        if (!loginBean.canAccessTask()) {
+            addErrorMessage("You are not allowed to manage tasks.");
+            return;
+        }
+
         if (name == null || name.isBlank()) {
             addErrorMessage("Task name is required.");
             return;
@@ -86,6 +91,11 @@ public class TaskBean implements Serializable {
     }
 
     public void markAsDone(Task task) {
+        if (!loginBean.canAccessTask()) {
+            addErrorMessage("You are not allowed to manage tasks.");
+            return;
+        }
+
         if (task == null) {
             return;
         }
@@ -95,6 +105,11 @@ public class TaskBean implements Serializable {
     }
 
     public void deleteTask(Task task) {
+        if (!loginBean.canAccessTask()) {
+            addErrorMessage("You are not allowed to manage tasks.");
+            return;
+        }
+
         if (task == null) {
             return;
         }
@@ -108,6 +123,11 @@ public class TaskBean implements Serializable {
     }
 
     public void editTask(Task task) {
+        if (!loginBean.canAccessTask()) {
+            addErrorMessage("You are not allowed to manage tasks.");
+            return;
+        }
+
         if (task == null) {
             return;
         }

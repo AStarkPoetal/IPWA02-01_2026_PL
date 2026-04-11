@@ -29,6 +29,11 @@ public class TestReportBean implements Serializable {
     private TestBean testBean;
 
     public void createTestReport() {
+        if (!loginBean.canAccessReport()) {
+            addErrorMessage("You are not allowed to manage test reports.");
+            return;
+        }
+
         if (name == null || name.isBlank()) {
             addErrorMessage("Test report name is required.");
             return;
@@ -56,6 +61,11 @@ public class TestReportBean implements Serializable {
     }
 
     public void deleteTestReport(TestReport testReport) {
+        if (!loginBean.canAccessReport()) {
+            addErrorMessage("You are not allowed to manage test reports.");
+            return;
+        }
+
         if (testReport == null) {
             return;
         }

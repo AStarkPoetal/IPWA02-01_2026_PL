@@ -39,7 +39,13 @@ public class TestService {
                             "SELECT DISTINCT t FROM Test t " +
                                     "LEFT JOIN FETCH t.testCases " +
                                     "LEFT JOIN FETCH t.createdBy " +
-                                    "ORDER BY t.id",
+                                    "ORDER BY " +
+                                    "CASE " +
+                                    "WHEN t.status = 'open' THEN 0 " +
+                                    "WHEN t.status = 'in_progress' THEN 1 " +
+                                    "WHEN t.status = 'done' THEN 2 " +
+                                    "ELSE 3 END, " +
+                                    "t.id",
                             Test.class)
                     .getResultList();
         } finally {
@@ -67,30 +73,6 @@ public class TestService {
         try {
             entityManager.getTransaction().begin();
             entityManager.merge(test);
-            entityManager.getTransaction().commit();
-        } finally {
-            if (entityManager.getTransaction().isActive()) {
-                entityManager.getTransaction().rollback();
-            }
-            entityManager.close();
-        }
-    }
-
-    public void updateStatus(Integer testId, String newStatus) {
-        if (testId == null || newStatus == null || newStatus.isBlank()) {
-            return;
-        }
-
-        EntityManager entityManager = JpaUtil.createEntityManager();
-
-        try {
-            entityManager.getTransaction().begin();
-
-            Test managedTest = entityManager.find(Test.class, testId);
-            if (managedTest != null) {
-                managedTest.setStatus(newStatus);
-            }
-
             entityManager.getTransaction().commit();
         } finally {
             if (entityManager.getTransaction().isActive()) {

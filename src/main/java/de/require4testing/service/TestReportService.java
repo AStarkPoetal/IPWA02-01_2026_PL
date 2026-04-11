@@ -28,6 +28,7 @@ public class TestReportService {
             }
 
             entityManager.persist(testReport);
+            markCoveredRequirementsAsDone(entityManager, testReport);
             entityManager.getTransaction().commit();
         } finally {
             if (entityManager.getTransaction().isActive()) {
@@ -80,5 +81,29 @@ public class TestReportService {
         } finally {
             entityManager.close();
         }
+    }
+
+    private void markCoveredRequirementsAsDone(EntityManager entityManager, TestReport testReport) {
+        if (!"passed".equals(testReport.getStatus()) || testReport.getTest() == null) {
+            return;
+        }
+
+        List<Integer> requirementIds = entityManager.createQuery(
+                        "SELECT DISTINCT tc.requirement.id FROM TestCase tc " +
+                                "WHERE tc.test.id = :testId AND tc.requirement IS NOT NULL",
+                        Integer.class)
+                .setParameter("testId", testReport.getTest().getId())
+                .getResultList();
+
+        if (requirementIds.isEmpty()) {
+            return;
+        }
+
+        entityManager.createQuery(
+                        "UPDATE Requirement r SET r.status = :status " +
+                                "WHERE r.id IN :requirementIds")
+                .setParameter("status", "done")
+                .setParameter("requirementIds", requirementIds)
+                .executeUpdate();
     }
 }

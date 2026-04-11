@@ -1,5 +1,6 @@
 package de.require4testing.service;
 
+import de.require4testing.model.Requirement;
 import de.require4testing.model.Test;
 import de.require4testing.model.TestCase;
 import de.require4testing.persistence.JpaUtil;
@@ -15,7 +16,15 @@ public class TestCaseService {
 
         try {
             entityManager.getTransaction().begin();
+
+            if (testCase.getRequirement() != null && testCase.getRequirement().getId() > 0) {
+                Requirement managedRequirement =
+                        entityManager.getReference(Requirement.class, testCase.getRequirement().getId());
+                testCase.setRequirement(managedRequirement);
+            }
+
             entityManager.persist(testCase);
+            moveRequirementToInProgress(testCase.getRequirement());
             entityManager.getTransaction().commit();
         } finally {
             if (entityManager.getTransaction().isActive()) {
@@ -60,7 +69,8 @@ public class TestCaseService {
 
         try {
             entityManager.getTransaction().begin();
-            entityManager.merge(testCase);
+            TestCase managedTestCase = entityManager.merge(testCase);
+            moveRequirementToInProgress(managedTestCase.getRequirement());
             entityManager.getTransaction().commit();
         } finally {
             if (entityManager.getTransaction().isActive()) {
@@ -134,6 +144,16 @@ public class TestCaseService {
             return false;
         } finally {
             entityManager.close();
+        }
+    }
+
+    private void moveRequirementToInProgress(Requirement requirement) {
+        if (requirement == null || requirement.getStatus() == null) {
+            return;
+        }
+
+        if ("new".equals(requirement.getStatus())) {
+            requirement.setStatus("in_progress");
         }
     }
 }

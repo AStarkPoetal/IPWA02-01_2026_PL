@@ -26,7 +26,7 @@ public class Requirement {
     @Column(name = "Priority", nullable = false, length = 1)
     private String priority;
 
-    @Column(name = "Status", nullable = false, length = 10)
+    @Column(name = "Status", nullable = false, length = 20)
     private String status;
 
     @OneToMany(mappedBy = "requirement")

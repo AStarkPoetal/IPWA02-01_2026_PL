@@ -19,6 +19,7 @@ public class RequirementBean implements Serializable {
     private String name;
     private String priority;
     private String status = "new";
+    private Integer editingRequirementId;
 
     public void createRequirement() {
         if (name == null || name.isBlank()) {
@@ -36,13 +37,50 @@ public class RequirementBean implements Serializable {
         requirement.setPriority(priority);
         requirement.setStatus(status);
 
-        requirementService.create(requirement);
+        if (editingRequirementId != null) {
+            requirement.setId(editingRequirementId);
+            requirementService.update(requirement);
+            addInfoMessage("Requirement updated successfully.");
+        } else {
+            requirementService.create(requirement);
+            addInfoMessage("Requirement created successfully.");
+        }
 
         name = "";
         priority = "";
         status = "new";
+        editingRequirementId = null;
+    }
 
-        addInfoMessage("Requirement created successfully.");
+    public void editRequirement(Requirement requirement) {
+        if (requirement == null) {
+            return;
+        }
+
+        editingRequirementId = requirement.getId();
+        name = requirement.getName();
+        priority = requirement.getPriority();
+        status = requirement.getStatus();
+    }
+
+    public void cancelEdit() {
+        editingRequirementId = null;
+        name = "";
+        priority = "";
+        status = "new";
+    }
+
+    public void deleteRequirement(Requirement requirement) {
+        if (requirement == null) {
+            return;
+        }
+
+        if (requirementService.delete(requirement.getId())) {
+            addInfoMessage("Requirement deleted successfully.");
+            return;
+        }
+
+        addErrorMessage("Requirement could not be deleted. It may still be referenced by a TestCase.");
     }
 
     private void addErrorMessage(String message) {
@@ -79,5 +117,9 @@ public class RequirementBean implements Serializable {
 
     public List<Requirement> getRequirements() {
         return requirementService.findAll();
+    }
+
+    public boolean isEditing() {
+        return editingRequirementId != null;
     }
 }

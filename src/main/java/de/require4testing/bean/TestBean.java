@@ -21,7 +21,6 @@ public class TestBean implements Serializable {
     private final TestCaseService testCaseService = new TestCaseService();
 
     private String name;
-    private String status = "open";
     private Integer selectedTestId;
     private Integer selectedTestCaseId;
 
@@ -36,57 +35,57 @@ public class TestBean implements Serializable {
 
         Test test = new Test();
         test.setName(name);
-        test.setStatus(status);
+        test.setStatus("open");
         test.setCreatedBy(loginBean.getCurrentUser());
 
         testService.create(test);
+        addInfoMessage("Test created successfully.");
 
         name = "";
-        status = "open";
-
-        addInfoMessage("Test created successfully.");
     }
 
     public void updateStatus(Test test, String newStatus) {
         if (test != null) {
-            test.setStatus(newStatus);
+            testService.updateStatus(test.getId(), newStatus);
+            addInfoMessage("Test status updated.");
         }
     }
 
     public void assignSelectedTestCase() {
-        Test selectedTest = findTestById(selectedTestId);
-        TestCase selectedTestCase = findTestCaseById(selectedTestCaseId);
-
-        if (selectedTest == null) {
+        if (selectedTestId == null) {
             addErrorMessage("A test must be selected.");
             return;
         }
 
-        if (selectedTestCase == null) {
+        if (selectedTestCaseId == null) {
             addErrorMessage("A test case must be selected.");
             return;
         }
 
-        if (!selectedTest.getTestCases().contains(selectedTestCase)) {
-            selectedTestCase.setTest(selectedTest);
-            testCaseService.update(selectedTestCase);
+        if (testCaseService.assignToTest(selectedTestCaseId, selectedTestId)) {
+            selectedTestCaseId = null;
             addInfoMessage("TestCase assigned successfully.");
             return;
         }
 
-        addErrorMessage("This TestCase is already assigned to the selected Test.");
+        addErrorMessage("The selected TestCase could not be assigned to the selected Test.");
+    }
+
+    public void deleteTest(Test test) {
+        if (test == null) {
+            return;
+        }
+
+        if (testService.delete(test.getId())) {
+            addInfoMessage("Test deleted successfully.");
+            return;
+        }
+
+        addErrorMessage("Test could not be deleted. It may still be referenced by a TestCase or TestReport.");
     }
 
     public List<TestCase> getAvailableTestCases() {
         return testCaseService.findAll();
-    }
-
-    private Test findTestById(Integer testId) {
-        return testService.findById(testId);
-    }
-
-    private TestCase findTestCaseById(Integer testCaseId) {
-        return testCaseService.findById(testCaseId);
     }
 
     private void addErrorMessage(String message) {
@@ -103,14 +102,6 @@ public class TestBean implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public Integer getSelectedTestId() {

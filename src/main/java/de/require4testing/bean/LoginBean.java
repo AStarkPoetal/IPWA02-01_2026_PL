@@ -59,6 +59,9 @@ public class LoginBean implements Serializable {
     }
 
     public User getCurrentUser() {
+        if (currentUser == null && loggedIn) {
+            currentUser = userService.findOrCreateDemoUser();
+        }
         return currentUser;
     }
 }

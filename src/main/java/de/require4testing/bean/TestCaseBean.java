@@ -23,7 +23,7 @@ public class TestCaseBean implements Serializable {
     private String description;
     private String expectedResult;
     private Integer selectedRequirementId;
-    private Integer selectedTestId;
+    private Integer editingTestCaseId;
 
     @Inject
     private RequirementBean requirementBean;
@@ -58,15 +58,53 @@ public class TestCaseBean implements Serializable {
         testCase.setRequirement(selectedRequirement);
         testCase.setTest(selectedTest);
 
-        testCaseService.create(testCase);
+        if (editingTestCaseId != null) {
+            testCase.setId(editingTestCaseId);
+            testCaseService.update(testCase);
+            addInfoMessage("TestCase updated successfully.");
+        } else {
+            testCaseService.create(testCase);
+            addInfoMessage("TestCase created successfully.");
+        }
 
         name = "";
         description = "";
         expectedResult = "";
         selectedRequirementId = null;
-        selectedTestId = null;
+        editingTestCaseId = null;
+    }
 
-        addInfoMessage("TestCase created successfully.");
+    public void editTestCase(TestCase testCase) {
+        if (testCase == null) {
+            return;
+        }
+
+        editingTestCaseId = testCase.getId();
+        name = testCase.getName();
+        description = testCase.getDescription();
+        expectedResult = testCase.getExpectedResult();
+        selectedRequirementId = testCase.getRequirement() != null ? testCase.getRequirement().getId() : null;
+    }
+
+    public void cancelEdit() {
+        editingTestCaseId = null;
+        name = "";
+        description = "";
+        expectedResult = "";
+        selectedRequirementId = null;
+    }
+
+    public void deleteTestCase(TestCase testCase) {
+        if (testCase == null) {
+            return;
+        }
+
+        if (testCaseService.delete(testCase.getId())) {
+            addInfoMessage("TestCase deleted successfully.");
+            return;
+        }
+
+        addErrorMessage("TestCase could not be deleted.");
     }
 
     public List<Requirement> getAvailableRequirements() {
@@ -127,15 +165,11 @@ public class TestCaseBean implements Serializable {
         this.selectedRequirementId = selectedRequirementId;
     }
 
-    public Integer getSelectedTestId() {
-        return selectedTestId;
-    }
-
-    public void setSelectedTestId(Integer selectedTestId) {
-        this.selectedTestId = selectedTestId;
-    }
-
     public List<TestCase> getTestCases() {
         return testCaseService.findAll();
+    }
+
+    public boolean isEditing() {
+        return editingTestCaseId != null;
     }
 }

@@ -1,6 +1,7 @@
 package de.require4testing.bean;
 
 import de.require4testing.model.Task;
+import de.require4testing.service.TaskService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -8,20 +9,17 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @Named
 @SessionScoped
 public class TaskBean implements Serializable {
 
+    private final TaskService taskService = new TaskService();
+
     private String name;
     private String description;
-    private String status = "open";
-
-    private int nextId = 1;
-
-    private final List<Task> tasks = new ArrayList<>();
+    private Integer editingTaskId;
 
     @Inject
     private LoginBean loginBean;
@@ -37,20 +35,30 @@ public class TaskBean implements Serializable {
             return;
         }
 
-        Task task = new Task(nextId++, name, description, status, loginBean.getCurrentUser());
-        tasks.add(task);
+        Task task = new Task();
+        task.setName(name);
+        task.setDescription(description);
+        task.setStatus("in_progress");
+        task.setUser(loginBean.getCurrentUser());
+
+        if (editingTaskId != null) {
+            task.setId(editingTaskId);
+            Task existingTask = getTasks().stream()
+                    .filter(currentTask -> currentTask.getId() == editingTaskId)
+                    .findFirst()
+                    .orElse(null);
+            task.setStatus(existingTask != null ? existingTask.getStatus() : "in_progress");
+            task.setUser(existingTask != null ? existingTask.getUser() : loginBean.getCurrentUser());
+            taskService.update(task);
+            addInfoMessage("Task updated successfully.");
+        } else {
+            taskService.create(task);
+            addInfoMessage("Task created successfully.");
+        }
 
         name = "";
         description = "";
-        status = "open";
-
-        addInfoMessage("Task created successfully.");
-    }
-
-    public void updateStatus(Task task, String newStatus) {
-        if (task != null) {
-            task.setStatus(newStatus);
-        }
+        editingTaskId = null;
     }
 
     private void addErrorMessage(String message) {
@@ -77,15 +85,49 @@ public class TaskBean implements Serializable {
         this.description = description;
     }
 
-    public String getStatus() {
-        return status;
+    public void markAsDone(Task task) {
+        if (task == null) {
+            return;
+        }
+
+        taskService.updateStatus(task.getId(), "done");
+        addInfoMessage("Task marked as done.");
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void deleteTask(Task task) {
+        if (task == null) {
+            return;
+        }
+
+        if (taskService.delete(task.getId())) {
+            addInfoMessage("Task deleted successfully.");
+            return;
+        }
+
+        addErrorMessage("Task could not be deleted.");
+    }
+
+    public void editTask(Task task) {
+        if (task == null) {
+            return;
+        }
+
+        editingTaskId = task.getId();
+        name = task.getName();
+        description = task.getDescription();
+    }
+
+    public void cancelEdit() {
+        editingTaskId = null;
+        name = "";
+        description = "";
     }
 
     public List<Task> getTasks() {
-        return tasks;
+        return taskService.findAll();
+    }
+
+    public boolean isEditing() {
+        return editingTaskId != null;
     }
 }

@@ -92,7 +92,11 @@
                             </div>
 
                             <div class="button-row">
-                                <h:commandButton value="Create Requirement" action="#{requirementBean.createRequirement}" styleClass="action-button" />
+                                <h:commandButton value="#{requirementBean.editing ? 'Save Requirement' : 'Create Requirement'}" action="#{requirementBean.createRequirement}" styleClass="action-button" />
+                                <h:commandButton value="Cancel" action="#{requirementBean.cancelEdit}" styleClass="secondary-button"
+                                                 rendered="#{requirementBean.editing}" immediate="true">
+                                    <f:ajax execute="@this" render="@form" />
+                                </h:commandButton>
                             </div>
                         </div>
 
@@ -118,6 +122,17 @@
                                 <h:column>
                                     <f:facet name="header">Status</f:facet>
                                     <span class="status-pill">#{requirement.status}</span>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Action</f:facet>
+                                    <div class="button-row">
+                                        <h:commandButton value="Edit" action="#{requirementBean.editRequirement(requirement)}" styleClass="secondary-button" immediate="true">
+                                            <f:ajax execute="@this" render="@form" />
+                                        </h:commandButton>
+                                        <h:commandButton value="Delete" action="#{requirementBean.deleteRequirement(requirement)}" styleClass="secondary-button" immediate="true">
+                                            <f:ajax execute="@this" render="@form" />
+                                        </h:commandButton>
+                                    </div>
                                 </h:column>
                             </h:dataTable>
                         </div>
@@ -156,7 +171,11 @@
                             </div>
 
                             <div class="button-row">
-                                <h:commandButton value="Create TestCase" action="#{testCaseBean.createTestCase}" styleClass="action-button" />
+                                <h:commandButton value="#{testCaseBean.editing ? 'Save TestCase' : 'Create TestCase'}" action="#{testCaseBean.createTestCase}" styleClass="action-button" />
+                                <h:commandButton value="Cancel" action="#{testCaseBean.cancelEdit}" styleClass="secondary-button"
+                                                 rendered="#{testCaseBean.editing}" immediate="true">
+                                    <f:ajax execute="@this" render="@form" />
+                                </h:commandButton>
                             </div>
                         </div>
 
@@ -183,6 +202,17 @@
                                     <f:facet name="header">Expected Result</f:facet>
                                     #{testCase.expectedResult}
                                 </h:column>
+                                <h:column>
+                                    <f:facet name="header">Action</f:facet>
+                                    <div class="button-row">
+                                        <h:commandButton value="Edit" action="#{testCaseBean.editTestCase(testCase)}" styleClass="secondary-button" immediate="true">
+                                            <f:ajax execute="@this" render="@form" />
+                                        </h:commandButton>
+                                        <h:commandButton value="Delete" action="#{testCaseBean.deleteTestCase(testCase)}" styleClass="secondary-button" immediate="true">
+                                            <f:ajax execute="@this" render="@form" />
+                                        </h:commandButton>
+                                    </div>
+                                </h:column>
                             </h:dataTable>
                         </div>
                     </div>
@@ -199,18 +229,11 @@
                                 <h:outputLabel value="Name" for="testName" />
                                 <h:inputText id="testName" value="#{testBean.name}" required="true"
                                              requiredMessage="Test name is required." />
-
-                                <h:outputLabel value="Status" for="testStatus" />
-                                <h:selectOneMenu id="testStatus" value="#{testBean.status}">
-                                    <f:selectItem itemLabel="Open" itemValue="open" />
-                                    <f:selectItem itemLabel="In Progress" itemValue="in_progress" />
-                                    <f:selectItem itemLabel="Done" itemValue="done" />
-                                </h:selectOneMenu>
                             </div>
 
                             <div class="button-row">
                                 <h:commandButton value="Create Test" action="#{testBean.createTest}" styleClass="action-button">
-                                    <f:ajax execute="@this testName testStatus" render="createTestCard assignTestCard testListCard" />
+                                    <f:ajax execute="@this testName" render="assignTestCard testListCard" />
                                 </h:commandButton>
                             </div>
                         </h:panelGroup>
@@ -219,16 +242,14 @@
                             <h4>Assign TestCase To Test</h4>
                             <div class="field-grid">
                                 <h:outputLabel value="Test" for="assignTest" />
-                                <h:selectOneMenu id="assignTest" value="#{testBean.selectedTestId}" required="true"
-                                                 requiredMessage="A test must be selected.">
+                                <h:selectOneMenu id="assignTest" value="#{testBean.selectedTestId}">
                                     <f:selectItem itemLabel="Select test" itemValue="#{null}" />
                                     <f:selectItems value="#{testBean.tests}" var="test"
                                                    itemValue="#{test.id}" itemLabel="#{test.id} - #{test.name}" />
                                 </h:selectOneMenu>
 
                                 <h:outputLabel value="TestCase" for="assignTestCase" />
-                                <h:selectOneMenu id="assignTestCase" value="#{testBean.selectedTestCaseId}" required="true"
-                                                 requiredMessage="A test case must be selected.">
+                                <h:selectOneMenu id="assignTestCase" value="#{testBean.selectedTestCaseId}">
                                     <f:selectItem itemLabel="Select testcase" itemValue="#{null}" />
                                     <f:selectItems value="#{testBean.availableTestCases}" var="availableTestCase"
                                                    itemValue="#{availableTestCase.id}" itemLabel="#{availableTestCase.id} - #{availableTestCase.name}" />
@@ -264,6 +285,20 @@
                                 <h:column>
                                     <f:facet name="header">Assigned TestCases</f:facet>
                                     #{test.testCases.size()}
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Action</f:facet>
+                                    <div class="button-row">
+                                        <h:commandButton value="In Progress" action="#{testBean.updateStatus(test, 'in_progress')}" styleClass="secondary-button">
+                                            <f:ajax execute="@this" render="testListCard" />
+                                        </h:commandButton>
+                                        <h:commandButton value="Done" action="#{testBean.updateStatus(test, 'done')}" styleClass="secondary-button">
+                                            <f:ajax execute="@this" render="testListCard" />
+                                        </h:commandButton>
+                                        <h:commandButton value="Delete" action="#{testBean.deleteTest(test)}" styleClass="secondary-button">
+                                            <f:ajax execute="@this" render="testListCard assignTestCard" />
+                                        </h:commandButton>
+                                    </div>
                                 </h:column>
                             </h:dataTable>
                         </h:panelGroup>
@@ -325,6 +360,10 @@
                                     <f:facet name="header">Test</f:facet>
                                     #{report.test != null ? report.test.name : '-'}
                                 </h:column>
+                                <h:column>
+                                    <f:facet name="header">Action</f:facet>
+                                    <h:commandButton value="Delete" action="#{testReportBean.deleteTestReport(report)}" styleClass="secondary-button" />
+                                </h:column>
                             </h:dataTable>
                         </div>
                     </div>
@@ -345,17 +384,14 @@
                                 <h:outputLabel value="Description" for="taskDescription" />
                                 <h:inputTextarea id="taskDescription" value="#{taskBean.description}" rows="3" cols="30"
                                                  required="true" requiredMessage="Task description is required." />
-
-                                <h:outputLabel value="Status" for="taskStatus" />
-                                <h:selectOneMenu id="taskStatus" value="#{taskBean.status}">
-                                    <f:selectItem itemLabel="Open" itemValue="open" />
-                                    <f:selectItem itemLabel="In Progress" itemValue="in_progress" />
-                                    <f:selectItem itemLabel="Done" itemValue="done" />
-                                </h:selectOneMenu>
                             </div>
 
                             <div class="button-row">
-                                <h:commandButton value="Create Task" action="#{taskBean.createTask}" styleClass="action-button" />
+                                <h:commandButton value="#{taskBean.editing ? 'Save Task' : 'Create Task'}" action="#{taskBean.createTask}" styleClass="action-button" />
+                                <h:commandButton value="Cancel" action="#{taskBean.cancelEdit}" styleClass="secondary-button"
+                                                 rendered="#{taskBean.editing}" immediate="true">
+                                    <f:ajax execute="@this" render="@form" />
+                                </h:commandButton>
                             </div>
                         </div>
 
@@ -381,6 +417,33 @@
                                 <h:column>
                                     <f:facet name="header">Status</f:facet>
                                     <span class="status-pill">#{task.status}</span>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Action</f:facet>
+                                    <h:panelGroup rendered="#{task.status != 'done'}">
+                                        <div class="button-row">
+                                            <h:commandButton value="Mark as done" action="#{taskBean.markAsDone(task)}" styleClass="secondary-button">
+                                                <f:ajax execute="@this" render="@form" />
+                                            </h:commandButton>
+                                            <h:commandButton value="Edit" action="#{taskBean.editTask(task)}" styleClass="secondary-button" immediate="true">
+                                                <f:ajax execute="@this" render="@form" />
+                                            </h:commandButton>
+                                            <h:commandButton value="Delete" action="#{taskBean.deleteTask(task)}" styleClass="secondary-button">
+                                                <f:ajax execute="@this" render="@form" />
+                                            </h:commandButton>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{task.status == 'done'}">
+                                        <div class="button-row">
+                                            Completed
+                                            <h:commandButton value="Edit" action="#{taskBean.editTask(task)}" styleClass="secondary-button" immediate="true">
+                                                <f:ajax execute="@this" render="@form" />
+                                            </h:commandButton>
+                                            <h:commandButton value="Delete" action="#{taskBean.deleteTask(task)}" styleClass="secondary-button">
+                                            <f:ajax execute="@this" render="@form" />
+                                            </h:commandButton>
+                                        </div>
+                                    </h:panelGroup>
                                 </h:column>
                             </h:dataTable>
                         </div>

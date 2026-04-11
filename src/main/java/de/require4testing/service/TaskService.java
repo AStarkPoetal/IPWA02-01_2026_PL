@@ -1,6 +1,6 @@
 package de.require4testing.service;
 
-import de.require4testing.model.Test;
+import de.require4testing.model.Task;
 import de.require4testing.model.User;
 import de.require4testing.persistence.JpaUtil;
 import jakarta.persistence.EntityManager;
@@ -8,20 +8,20 @@ import jakarta.persistence.PersistenceException;
 
 import java.util.List;
 
-public class TestService {
+public class TaskService {
 
-    public void create(Test test) {
+    public void create(Task task) {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
         try {
             entityManager.getTransaction().begin();
 
-            if (test.getCreatedBy() != null && test.getCreatedBy().getId() > 0) {
-                User managedUser = entityManager.getReference(User.class, test.getCreatedBy().getId());
-                test.setCreatedBy(managedUser);
+            if (task.getUser() != null && task.getUser().getId() > 0) {
+                User managedUser = entityManager.getReference(User.class, task.getUser().getId());
+                task.setUser(managedUser);
             }
 
-            entityManager.persist(test);
+            entityManager.persist(task);
             entityManager.getTransaction().commit();
         } finally {
             if (entityManager.getTransaction().isActive()) {
@@ -31,42 +31,31 @@ public class TestService {
         }
     }
 
-    public List<Test> findAll() {
+    public List<Task> findAll() {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
         try {
             return entityManager.createQuery(
-                            "SELECT DISTINCT t FROM Test t " +
-                                    "LEFT JOIN FETCH t.testCases " +
-                                    "LEFT JOIN FETCH t.createdBy " +
-                                    "ORDER BY t.id",
-                            Test.class)
+                            "SELECT t FROM Task t LEFT JOIN FETCH t.user ORDER BY t.id",
+                            Task.class)
                     .getResultList();
         } finally {
             entityManager.close();
         }
     }
 
-    public Test findById(Integer id) {
-        if (id == null) {
-            return null;
-        }
-
-        EntityManager entityManager = JpaUtil.createEntityManager();
-
-        try {
-            return entityManager.find(Test.class, id);
-        } finally {
-            entityManager.close();
-        }
-    }
-
-    public void update(Test test) {
+    public void update(Task task) {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
         try {
             entityManager.getTransaction().begin();
-            entityManager.merge(test);
+
+            if (task.getUser() != null && task.getUser().getId() > 0) {
+                User managedUser = entityManager.getReference(User.class, task.getUser().getId());
+                task.setUser(managedUser);
+            }
+
+            entityManager.merge(task);
             entityManager.getTransaction().commit();
         } finally {
             if (entityManager.getTransaction().isActive()) {
@@ -76,8 +65,8 @@ public class TestService {
         }
     }
 
-    public void updateStatus(Integer testId, String newStatus) {
-        if (testId == null || newStatus == null || newStatus.isBlank()) {
+    public void updateStatus(Integer taskId, String newStatus) {
+        if (taskId == null || newStatus == null || newStatus.isBlank()) {
             return;
         }
 
@@ -86,9 +75,9 @@ public class TestService {
         try {
             entityManager.getTransaction().begin();
 
-            Test managedTest = entityManager.find(Test.class, testId);
-            if (managedTest != null) {
-                managedTest.setStatus(newStatus);
+            Task managedTask = entityManager.find(Task.class, taskId);
+            if (managedTask != null) {
+                managedTask.setStatus(newStatus);
             }
 
             entityManager.getTransaction().commit();
@@ -100,8 +89,8 @@ public class TestService {
         }
     }
 
-    public boolean delete(Integer testId) {
-        if (testId == null) {
+    public boolean delete(Integer taskId) {
+        if (taskId == null) {
             return false;
         }
 
@@ -110,13 +99,13 @@ public class TestService {
         try {
             entityManager.getTransaction().begin();
 
-            Test managedTest = entityManager.find(Test.class, testId);
-            if (managedTest == null) {
+            Task managedTask = entityManager.find(Task.class, taskId);
+            if (managedTask == null) {
                 entityManager.getTransaction().rollback();
                 return false;
             }
 
-            entityManager.remove(managedTest);
+            entityManager.remove(managedTask);
             entityManager.getTransaction().commit();
             return true;
         } catch (PersistenceException exception) {

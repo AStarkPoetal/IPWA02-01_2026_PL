@@ -1,20 +1,33 @@
 package de.require4testing.service;
 
-import de.require4testing.model.Requirement;
+import de.require4testing.model.Test;
+import de.require4testing.model.TestReport;
+import de.require4testing.model.User;
 import de.require4testing.persistence.JpaUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 
 import java.util.List;
 
-public class RequirementService {
+public class TestReportService {
 
-    public void create(Requirement requirement) {
+    public void create(TestReport testReport) {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
         try {
             entityManager.getTransaction().begin();
-            entityManager.persist(requirement);
+
+            if (testReport.getTest() != null && testReport.getTest().getId() > 0) {
+                Test managedTest = entityManager.getReference(Test.class, testReport.getTest().getId());
+                testReport.setTest(managedTest);
+            }
+
+            if (testReport.getUser() != null && testReport.getUser().getId() > 0) {
+                User managedUser = entityManager.getReference(User.class, testReport.getUser().getId());
+                testReport.setUser(managedUser);
+            }
+
+            entityManager.persist(testReport);
             entityManager.getTransaction().commit();
         } finally {
             if (entityManager.getTransaction().isActive()) {
@@ -24,34 +37,24 @@ public class RequirementService {
         }
     }
 
-    public List<Requirement> findAll() {
+    public List<TestReport> findAll() {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
         try {
-            return entityManager.createQuery("SELECT r FROM Requirement r ORDER BY r.id", Requirement.class)
+            return entityManager.createQuery(
+                            "SELECT tr FROM TestReport tr " +
+                                    "LEFT JOIN FETCH tr.test " +
+                                    "LEFT JOIN FETCH tr.user " +
+                                    "ORDER BY tr.id",
+                            TestReport.class)
                     .getResultList();
         } finally {
             entityManager.close();
         }
     }
 
-    public void update(Requirement requirement) {
-        EntityManager entityManager = JpaUtil.createEntityManager();
-
-        try {
-            entityManager.getTransaction().begin();
-            entityManager.merge(requirement);
-            entityManager.getTransaction().commit();
-        } finally {
-            if (entityManager.getTransaction().isActive()) {
-                entityManager.getTransaction().rollback();
-            }
-            entityManager.close();
-        }
-    }
-
-    public boolean delete(Integer requirementId) {
-        if (requirementId == null) {
+    public boolean delete(Integer testReportId) {
+        if (testReportId == null) {
             return false;
         }
 
@@ -60,13 +63,13 @@ public class RequirementService {
         try {
             entityManager.getTransaction().begin();
 
-            Requirement managedRequirement = entityManager.find(Requirement.class, requirementId);
-            if (managedRequirement == null) {
+            TestReport managedTestReport = entityManager.find(TestReport.class, testReportId);
+            if (managedTestReport == null) {
                 entityManager.getTransaction().rollback();
                 return false;
             }
 
-            entityManager.remove(managedRequirement);
+            entityManager.remove(managedTestReport);
             entityManager.getTransaction().commit();
             return true;
         } catch (PersistenceException exception) {

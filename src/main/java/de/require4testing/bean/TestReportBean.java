@@ -2,6 +2,7 @@ package de.require4testing.bean;
 
 import de.require4testing.model.Test;
 import de.require4testing.model.TestReport;
+import de.require4testing.service.TestReportService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -9,20 +10,17 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @Named
 @SessionScoped
 public class TestReportBean implements Serializable {
 
+    private final TestReportService testReportService = new TestReportService();
+
     private String name;
     private String status = "failed";
     private Integer selectedTestId;
-
-    private int nextId = 1;
-
-    private final List<TestReport> testReports = new ArrayList<>();
 
     @Inject
     private LoginBean loginBean;
@@ -42,8 +40,13 @@ public class TestReportBean implements Serializable {
             return;
         }
 
-        TestReport testReport = new TestReport(nextId++, name, status, selectedTest, loginBean.getCurrentUser());
-        testReports.add(testReport);
+        TestReport testReport = new TestReport();
+        testReport.setName(name);
+        testReport.setStatus(status);
+        testReport.setTest(selectedTest);
+        testReport.setUser(loginBean.getCurrentUser());
+
+        testReportService.create(testReport);
 
         name = "";
         status = "failed";
@@ -52,10 +55,17 @@ public class TestReportBean implements Serializable {
         addInfoMessage("TestReport created successfully.");
     }
 
-    public void updateStatus(TestReport testReport, String newStatus) {
-        if (testReport != null) {
-            testReport.setStatus(newStatus);
+    public void deleteTestReport(TestReport testReport) {
+        if (testReport == null) {
+            return;
         }
+
+        if (testReportService.delete(testReport.getId())) {
+            addInfoMessage("TestReport deleted successfully.");
+            return;
+        }
+
+        addErrorMessage("TestReport could not be deleted.");
     }
 
     public List<Test> getAvailableTests() {
@@ -109,6 +119,6 @@ public class TestReportBean implements Serializable {
     }
 
     public List<TestReport> getTestReports() {
-        return testReports;
+        return testReportService.findAll();
     }
 }

@@ -32,7 +32,7 @@ public class TestCaseBean implements Serializable {
     private LoginBean loginBean;
 
     public void createTestCase() {
-        if (!loginBean.canAccessTestCase()) {
+        if (!loginBean.canManageTestCase()) {
             addErrorMessage("You are not allowed to manage test cases.");
             return;
         }
@@ -83,7 +83,7 @@ public class TestCaseBean implements Serializable {
     }
 
     public void editTestCase(TestCase testCase) {
-        if (!loginBean.canAccessTestCase()) {
+        if (!loginBean.canManageTestCase()) {
             addErrorMessage("You are not allowed to manage test cases.");
             return;
         }
@@ -108,7 +108,7 @@ public class TestCaseBean implements Serializable {
     }
 
     public void deleteTestCase(TestCase testCase) {
-        if (!loginBean.canAccessTestCase()) {
+        if (!loginBean.canManageTestCase()) {
             addErrorMessage("You are not allowed to manage test cases.");
             return;
         }

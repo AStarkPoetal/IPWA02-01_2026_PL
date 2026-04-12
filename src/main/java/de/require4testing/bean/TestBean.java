@@ -28,7 +28,7 @@ public class TestBean implements Serializable {
     private LoginBean loginBean;
 
     public void createTest() {
-        if (!loginBean.canAccessTest()) {
+        if (!loginBean.canCreateTest()) {
             addErrorMessage("You are not allowed to manage tests.");
             return;
         }
@@ -50,11 +50,6 @@ public class TestBean implements Serializable {
     }
 
     public void assignSelectedTestCase() {
-        if (!loginBean.canAccessTest()) {
-            addErrorMessage("You are not allowed to manage tests.");
-            return;
-        }
-
         if (selectedTestId == null) {
             addErrorMessage("A test must be selected.");
             return;
@@ -62,6 +57,12 @@ public class TestBean implements Serializable {
 
         if (selectedTestCaseId == null) {
             addErrorMessage("A test case must be selected.");
+            return;
+        }
+
+        Test selectedTest = findTestById(selectedTestId);
+        if (!loginBean.canAssignTestCase(selectedTest)) {
+            addErrorMessage("You are not allowed to assign test cases to this test.");
             return;
         }
 
@@ -75,7 +76,7 @@ public class TestBean implements Serializable {
     }
 
     public void deleteTest(Test test) {
-        if (!loginBean.canAccessTest()) {
+        if (!loginBean.canManageTest(test)) {
             addErrorMessage("You are not allowed to manage tests.");
             return;
         }
@@ -93,12 +94,12 @@ public class TestBean implements Serializable {
     }
 
     public void unassignTestCase(TestCase testCase) {
-        if (!loginBean.canAccessTest()) {
+        if (testCase == null || !loginBean.canAssignTestCase(testCase.getTest())) {
             addErrorMessage("You are not allowed to manage tests.");
             return;
         }
 
-        if (testCase == null || testCase.getId() <= 0) {
+        if (testCase.getId() <= 0) {
             return;
         }
 
@@ -112,6 +113,26 @@ public class TestBean implements Serializable {
 
     public List<TestCase> getAvailableTestCases() {
         return testCaseService.findAll();
+    }
+
+    public List<Test> getAssignableTests() {
+        return getTests().stream()
+                .filter(loginBean::canAssignTestCase)
+                .toList();
+    }
+
+    private Test findTestById(Integer testId) {
+        if (testId == null) {
+            return null;
+        }
+
+        for (Test test : getTests()) {
+            if (test.getId() == testId) {
+                return test;
+            }
+        }
+
+        return null;
     }
 
     private void addErrorMessage(String message) {

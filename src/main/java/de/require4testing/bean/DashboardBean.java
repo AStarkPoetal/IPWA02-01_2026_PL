@@ -36,13 +36,6 @@ public class DashboardBean implements Serializable {
             return true;
         }
 
-        return switch (panel) {
-            case "requirement" -> loginBean.canAccessRequirement();
-            case "testcase" -> loginBean.canAccessTestCase();
-            case "test" -> loginBean.canAccessTest();
-            case "report" -> loginBean.canAccessReport();
-            case "task" -> loginBean.canAccessTask();
-            default -> false;
-        };
+        return loginBean.isLoggedIn();
     }
 }

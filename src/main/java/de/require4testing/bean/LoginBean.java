@@ -1,6 +1,10 @@
 package de.require4testing.bean;
 
+import de.require4testing.model.Task;
+import de.require4testing.model.Test;
+import de.require4testing.model.TestReport;
 import de.require4testing.model.User;
+import de.require4testing.model.UserRoles;
 import de.require4testing.service.UserService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -92,23 +96,165 @@ public class LoginBean implements Serializable {
     }
 
     public boolean canAccessRequirement() {
-        return hasRole("TM", "RE");
+        return loggedIn;
+    }
+
+    public boolean canManageRequirement() {
+        return hasRole(UserRoles.REQUIREMENTS_ENGINEER);
     }
 
     public boolean canAccessTestCase() {
-        return hasRole("TM", "RE", "TFE");
+        return loggedIn;
+    }
+
+    public boolean canManageTestCase() {
+        return hasRole(UserRoles.REQUIREMENTS_ENGINEER, UserRoles.TEST_MANAGER);
     }
 
     public boolean canAccessTest() {
-        return hasRole("TM", "TFE", "T");
+        return loggedIn;
+    }
+
+    public boolean canCreateTest() {
+        return canAccessTest();
+    }
+
+    public boolean canManageTest(Test test) {
+        return canAccessTest() && isOwnTest(test);
+    }
+
+    public boolean canAssignTestCase(Test test) {
+        return hasRole(UserRoles.TEST_MANAGER) && isOwnTest(test);
     }
 
     public boolean canAccessReport() {
-        return hasRole("TM", "TFE", "T");
+        return hasRole(UserRoles.TEST_MANAGER, UserRoles.TESTER);
+    }
+
+    public boolean canCreateReport() {
+        return hasRole(UserRoles.TEST_MANAGER, UserRoles.TESTER);
+    }
+
+    public boolean canCreateReportForTest(Test test) {
+        return hasRole(UserRoles.TEST_MANAGER) || (hasRole(UserRoles.TESTER) && isOwnTest(test));
+    }
+
+    public boolean canDeleteReport(TestReport testReport) {
+        return hasRole(UserRoles.TEST_MANAGER) || (hasRole(UserRoles.TESTER) && isOwnReport(testReport));
     }
 
     public boolean canAccessTask() {
-        return hasRole("TM", "TFE", "T");
+        return loggedIn;
+    }
+
+    public boolean canCreateTask() {
+        return hasRole(UserRoles.REQUIREMENTS_ENGINEER, UserRoles.TEST_MANAGER);
+    }
+
+    public boolean canManageTask(Task task) {
+        return hasRole(UserRoles.REQUIREMENTS_ENGINEER, UserRoles.TEST_MANAGER)
+                || (canCreateTask() && isOwnTask(task));
+    }
+
+    public String getRequirementPermissionNote() {
+        if (canManageRequirement()) {
+            return null;
+        }
+
+        return "Note: you are logged in with the " + getRoleCode() + " role, so you can view requirements but cannot create, edit, or delete them.";
+    }
+
+    public String getTestCasePermissionNote() {
+        if (canManageTestCase()) {
+            return null;
+        }
+
+        return "Note: you are logged in with the " + getRoleCode() + " role, so you can view test cases here but cannot create, edit, or delete them.";
+    }
+
+    public String getTestPermissionNote() {
+        if (hasRole(UserRoles.REQUIREMENTS_ENGINEER)) {
+            return "Note: you are logged in with the RE role, so you can view tests but cannot create, assign, unassign, or delete them.";
+        }
+
+        if (hasRole(UserRoles.TEST_FALL_ENGINEER)) {
+            return "Note: you are logged in with the TFE role. You can create your own tests, but you cannot assign or unassign test cases.";
+        }
+
+        if (hasRole(UserRoles.TESTER)) {
+            return "Note: you are logged in with the T role. You can create your own tests, but you cannot assign or unassign test cases.";
+        }
+
+        if (hasRole(UserRoles.TEST_MANAGER)) {
+            return "Note: you are logged in with the TM role. You can assign test cases only to your own tests.";
+        }
+
+        return null;
+    }
+
+    public String getReportPermissionNote() {
+        if (hasRole(UserRoles.REQUIREMENTS_ENGINEER)) {
+            return "Note: you are logged in with the RE role, so you can only view reports here.";
+        }
+
+        if (hasRole(UserRoles.TEST_FALL_ENGINEER)) {
+            return "Note: you are logged in with the TFE role, so you cannot create or delete reports.";
+        }
+
+        if (hasRole(UserRoles.TESTER)) {
+            return "Note: you are logged in with the T role. You can create reports only for your own tests, and you can delete only your own reports.";
+        }
+
+        if (hasRole(UserRoles.TEST_MANAGER)) {
+            return "Note: you are logged in with the TM role. You can create reports for any test and delete any report.";
+        }
+
+        return null;
+    }
+
+    public String getTaskPermissionNote() {
+        if (hasRole(UserRoles.REQUIREMENTS_ENGINEER)) {
+            return "Note: you are logged in with the RE role. You can create tasks and manage all tasks.";
+        }
+
+        if (hasRole(UserRoles.TEST_MANAGER)) {
+            return "Note: you are logged in with the TM role. You can create tasks and manage all tasks.";
+        }
+
+        if (hasRole(UserRoles.TEST_FALL_ENGINEER) || hasRole(UserRoles.TESTER)) {
+            return "Note: you are logged in with the " + getRoleCode() + " role, so you can view tasks but cannot create, edit, or delete them.";
+        }
+
+        return null;
+    }
+
+    public String getRoleCode() {
+        User user = getCurrentUser();
+        return user != null ? user.getRole() : "-";
+    }
+
+    private boolean isOwnTest(Test test) {
+        User user = getCurrentUser();
+        return user != null
+                && test != null
+                && test.getCreatedBy() != null
+                && test.getCreatedBy().getId() == user.getId();
+    }
+
+    private boolean isOwnTask(Task task) {
+        User user = getCurrentUser();
+        return user != null
+                && task != null
+                && task.getUser() != null
+                && task.getUser().getId() == user.getId();
+    }
+
+    private boolean isOwnReport(TestReport testReport) {
+        User user = getCurrentUser();
+        return user != null
+                && testReport != null
+                && testReport.getUser() != null
+                && testReport.getUser().getId() == user.getId();
     }
 
     private void addErrorMessage(String message) {

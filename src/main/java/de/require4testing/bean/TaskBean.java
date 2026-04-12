@@ -25,7 +25,7 @@ public class TaskBean implements Serializable {
     private LoginBean loginBean;
 
     public void createTask() {
-        if (!loginBean.canAccessTask()) {
+        if (!loginBean.canCreateTask()) {
             addErrorMessage("You are not allowed to manage tasks.");
             return;
         }
@@ -91,7 +91,7 @@ public class TaskBean implements Serializable {
     }
 
     public void markAsDone(Task task) {
-        if (!loginBean.canAccessTask()) {
+        if (!loginBean.canManageTask(task)) {
             addErrorMessage("You are not allowed to manage tasks.");
             return;
         }
@@ -105,7 +105,7 @@ public class TaskBean implements Serializable {
     }
 
     public void deleteTask(Task task) {
-        if (!loginBean.canAccessTask()) {
+        if (!loginBean.canManageTask(task)) {
             addErrorMessage("You are not allowed to manage tasks.");
             return;
         }
@@ -123,7 +123,7 @@ public class TaskBean implements Serializable {
     }
 
     public void editTask(Task task) {
-        if (!loginBean.canAccessTask()) {
+        if (!loginBean.canManageTask(task)) {
             addErrorMessage("You are not allowed to manage tasks.");
             return;
         }

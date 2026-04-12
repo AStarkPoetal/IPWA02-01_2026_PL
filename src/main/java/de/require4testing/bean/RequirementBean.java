@@ -26,7 +26,7 @@ public class RequirementBean implements Serializable {
     private LoginBean loginBean;
 
     public void createRequirement() {
-        if (!loginBean.canAccessRequirement()) {
+        if (!loginBean.canManageRequirement()) {
             addErrorMessage("You are not allowed to manage requirements.");
             return;
         }
@@ -62,7 +62,7 @@ public class RequirementBean implements Serializable {
     }
 
     public void editRequirement(Requirement requirement) {
-        if (!loginBean.canAccessRequirement()) {
+        if (!loginBean.canManageRequirement()) {
             addErrorMessage("You are not allowed to manage requirements.");
             return;
         }
@@ -85,7 +85,7 @@ public class RequirementBean implements Serializable {
     }
 
     public void deleteRequirement(Requirement requirement) {
-        if (!loginBean.canAccessRequirement()) {
+        if (!loginBean.canManageRequirement()) {
             addErrorMessage("You are not allowed to manage requirements.");
             return;
         }

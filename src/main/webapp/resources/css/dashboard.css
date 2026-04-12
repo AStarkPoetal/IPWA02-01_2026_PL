@@ -147,6 +147,12 @@ body {
     padding: 18px;
 }
 
+.locked-card {
+    opacity: 0.5;
+    background: #eef2f5;
+    border-color: #d4dbe2;
+}
+
 .form-card h4,
 .table-card h4,
 .home-card h4 {
@@ -225,6 +231,16 @@ th {
     background: #ffffff;
     border: 1px dashed #c8d5e2;
     color: #64748b;
+}
+
+.permission-note {
+    margin: 0 0 18px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #fff3cd;
+    border: 1px solid #f2d28b;
+    color: #7a5610;
+    font-weight: 600;
 }
 
 .status-pill {

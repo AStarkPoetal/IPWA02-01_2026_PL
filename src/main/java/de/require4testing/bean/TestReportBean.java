@@ -45,6 +45,11 @@ public class TestReportBean implements Serializable {
             return;
         }
 
+        if (!loginBean.canCreateReportForTest(selectedTest)) {
+            addErrorMessage("You are not allowed to create a report for this test.");
+            return;
+        }
+
         TestReport testReport = new TestReport();
         testReport.setName(name);
         testReport.setStatus(status);
@@ -61,7 +66,7 @@ public class TestReportBean implements Serializable {
     }
 
     public void deleteTestReport(TestReport testReport) {
-        if (!loginBean.canAccessReport()) {
+        if (!loginBean.canDeleteReport(testReport)) {
             addErrorMessage("You are not allowed to manage test reports.");
             return;
         }
@@ -79,7 +84,9 @@ public class TestReportBean implements Serializable {
     }
 
     public List<Test> getAvailableTests() {
-        return testBean.getTests();
+        return testBean.getTests().stream()
+                .filter(loginBean::canCreateReportForTest)
+                .toList();
     }
 
     private Test findTestById(Integer testId) {

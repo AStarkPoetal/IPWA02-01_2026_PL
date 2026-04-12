@@ -49,16 +49,11 @@
 
                 <h:panelGroup rendered="#{loginBean.loggedIn}" layout="block" styleClass="nav-bar">
                     <h:commandButton value="Home" action="#{dashboardBean.showPanel('home')}" styleClass="nav-button" immediate="true" />
-                    <h:commandButton value="Requirements" action="#{dashboardBean.showPanel('requirement')}" styleClass="nav-button" immediate="true"
-                                     rendered="#{loginBean.canAccessRequirement()}" />
-                    <h:commandButton value="Test Cases" action="#{dashboardBean.showPanel('testcase')}" styleClass="nav-button" immediate="true"
-                                     rendered="#{loginBean.canAccessTestCase()}" />
-                    <h:commandButton value="Tests" action="#{dashboardBean.showPanel('test')}" styleClass="nav-button" immediate="true"
-                                     rendered="#{loginBean.canAccessTest()}" />
-                    <h:commandButton value="Reports" action="#{dashboardBean.showPanel('report')}" styleClass="nav-button" immediate="true"
-                                     rendered="#{loginBean.canAccessReport()}" />
-                    <h:commandButton value="Tasks" action="#{dashboardBean.showPanel('task')}" styleClass="nav-button" immediate="true"
-                                     rendered="#{loginBean.canAccessTask()}" />
+                    <h:commandButton value="Requirements" action="#{dashboardBean.showPanel('requirement')}" styleClass="nav-button" immediate="true" />
+                    <h:commandButton value="Test Cases" action="#{dashboardBean.showPanel('testcase')}" styleClass="nav-button" immediate="true" />
+                    <h:commandButton value="Tests" action="#{dashboardBean.showPanel('test')}" styleClass="nav-button" immediate="true" />
+                    <h:commandButton value="Reports" action="#{dashboardBean.showPanel('report')}" styleClass="nav-button" immediate="true" />
+                    <h:commandButton value="Tasks" action="#{dashboardBean.showPanel('task')}" styleClass="nav-button" immediate="true" />
                 </h:panelGroup>
             </section>
 
@@ -96,39 +91,44 @@
                     <p class="section-intro">Choose a module to create and manage your testing data.</p>
 
                     <div class="home-grid">
-                        <div class="home-card">
+                        <div class="home-card #{loginBean.canManageRequirement() ? '' : 'locked-card'}">
                             <h4>Requirements</h4>
                             <p>Capture business needs and define priority and status.</p>
                         </div>
-                        <div class="home-card">
+                        <div class="home-card #{loginBean.canManageTestCase() ? '' : 'locked-card'}">
                             <h4>Test Cases</h4>
                             <p>Document expected results and connect test cases to requirements.</p>
                         </div>
-                        <div class="home-card">
+                        <div class="home-card #{loginBean.canCreateTest() or loginBean.canCreateReport() ? '' : 'locked-card'}">
                             <h4>Tests &amp; Reports</h4>
                             <p>Create tests, assign test cases and track execution results.</p>
                         </div>
-                        <div class="home-card">
+                        <div class="home-card #{loginBean.canCreateTask() ? '' : 'locked-card'}">
                             <h4>Tasks</h4>
                             <p>Track work items and progress inside the same dashboard.</p>
                         </div>
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'requirement' and loginBean.canAccessRequirement()}">
+                <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'requirement'}">
                     <h3>Requirements</h3>
                     <p class="section-intro">Create new requirements and review the current list.</p>
+                    <h:panelGroup rendered="#{not empty loginBean.requirementPermissionNote}">
+                        <div class="permission-note">#{loginBean.requirementPermissionNote}</div>
+                    </h:panelGroup>
 
                     <div class="panel-grid">
-                        <div class="form-card">
+                        <div class="form-card #{loginBean.canManageRequirement() ? '' : 'locked-card'}">
                             <h4>Create Requirement</h4>
                             <div class="field-grid">
                                 <h:outputLabel value="Name" for="requirementName" />
                                 <h:inputText id="requirementName" value="#{requirementBean.name}" required="true"
+                                             disabled="#{not loginBean.canManageRequirement()}"
                                              requiredMessage="Requirement name is required." />
 
                                 <h:outputLabel value="Priority" for="requirementPriority" />
                                 <h:selectOneMenu id="requirementPriority" value="#{requirementBean.priority}" required="true"
+                                                 disabled="#{not loginBean.canManageRequirement()}"
                                                  requiredMessage="Requirement priority is required.">
                                     <f:selectItem itemLabel="Select priority" itemValue="" />
                                     <f:selectItem itemLabel="Must" itemValue="M" />
@@ -139,7 +139,8 @@
                             </div>
 
                             <div class="button-row">
-                                <h:commandButton value="#{requirementBean.editing ? 'Save Requirement' : 'Create Requirement'}" action="#{requirementBean.createRequirement}" styleClass="action-button" />
+                                <h:commandButton value="#{requirementBean.editing ? 'Save Requirement' : 'Create Requirement'}" action="#{requirementBean.createRequirement}" styleClass="action-button"
+                                                 disabled="#{not loginBean.canManageRequirement()}" />
                                 <h:commandButton value="Cancel" action="#{requirementBean.cancelEdit}" styleClass="secondary-button"
                                                  rendered="#{requirementBean.editing}" immediate="true">
                                     <f:ajax execute="@this" render="@form" />
@@ -173,10 +174,12 @@
                                 <h:column>
                                     <f:facet name="header">Action</f:facet>
                                     <div class="button-row">
-                                        <h:commandButton value="Edit" action="#{requirementBean.editRequirement(requirement)}" styleClass="secondary-button" immediate="true">
+                                        <h:commandButton value="Edit" action="#{requirementBean.editRequirement(requirement)}" styleClass="secondary-button" immediate="true"
+                                                         rendered="#{loginBean.canManageRequirement()}">
                                             <f:ajax execute="@this" render="@form" />
                                         </h:commandButton>
-                                        <h:commandButton value="Delete" action="#{requirementBean.deleteRequirement(requirement)}" styleClass="secondary-button" immediate="true">
+                                        <h:commandButton value="Delete" action="#{requirementBean.deleteRequirement(requirement)}" styleClass="secondary-button" immediate="true"
+                                                         rendered="#{loginBean.canManageRequirement()}">
                                             <f:ajax execute="@this" render="@form" />
                                         </h:commandButton>
                                     </div>
@@ -186,28 +189,35 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'testcase' and loginBean.canAccessTestCase()}">
+                <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'testcase'}">
                     <h3>Test Cases</h3>
                     <p class="section-intro">Create test cases and bind them to existing requirements.</p>
+                    <h:panelGroup rendered="#{not empty loginBean.testCasePermissionNote}">
+                        <div class="permission-note">#{loginBean.testCasePermissionNote}</div>
+                    </h:panelGroup>
 
                     <div class="panel-grid">
-                        <div class="form-card">
+                        <div class="form-card #{loginBean.canManageTestCase() ? '' : 'locked-card'}">
                             <h4>Create TestCase</h4>
                             <div class="field-grid">
                                 <h:outputLabel value="Name" for="testCaseName" />
                                 <h:inputText id="testCaseName" value="#{testCaseBean.name}" required="true"
+                                             disabled="#{not loginBean.canManageTestCase()}"
                                              requiredMessage="TestCase name is required." />
 
                                 <h:outputLabel value="Description" for="testCaseDescription" />
                                 <h:inputTextarea id="testCaseDescription" value="#{testCaseBean.description}" rows="3" cols="30"
+                                                 disabled="#{not loginBean.canManageTestCase()}"
                                                  required="true" requiredMessage="TestCase description is required." />
 
                                 <h:outputLabel value="Expected Result" for="testCaseExpectedResult" />
                                 <h:inputTextarea id="testCaseExpectedResult" value="#{testCaseBean.expectedResult}" rows="3" cols="30"
+                                                 disabled="#{not loginBean.canManageTestCase()}"
                                                  required="true" requiredMessage="Expected result is required." />
 
                                 <h:outputLabel value="Requirement" for="testCaseRequirement" />
                                 <h:selectOneMenu id="testCaseRequirement" value="#{testCaseBean.selectedRequirementId}" required="true"
+                                                 disabled="#{not loginBean.canManageTestCase()}"
                                                  requiredMessage="A requirement must be selected.">
                                     <f:selectItem itemLabel="Select requirement" itemValue="#{null}" />
                                     <f:selectItems value="#{testCaseBean.availableRequirements}"
@@ -218,7 +228,8 @@
                             </div>
 
                             <div class="button-row">
-                                <h:commandButton value="#{testCaseBean.editing ? 'Save TestCase' : 'Create TestCase'}" action="#{testCaseBean.createTestCase}" styleClass="action-button" />
+                                <h:commandButton value="#{testCaseBean.editing ? 'Save TestCase' : 'Create TestCase'}" action="#{testCaseBean.createTestCase}" styleClass="action-button"
+                                                 disabled="#{not loginBean.canManageTestCase()}" />
                                 <h:commandButton value="Cancel" action="#{testCaseBean.cancelEdit}" styleClass="secondary-button"
                                                  rendered="#{testCaseBean.editing}" immediate="true">
                                     <f:ajax execute="@this" render="@form" />
@@ -252,10 +263,12 @@
                                 <h:column>
                                     <f:facet name="header">Action</f:facet>
                                     <div class="button-row">
-                                        <h:commandButton value="Edit" action="#{testCaseBean.editTestCase(testCase)}" styleClass="secondary-button" immediate="true">
+                                        <h:commandButton value="Edit" action="#{testCaseBean.editTestCase(testCase)}" styleClass="secondary-button" immediate="true"
+                                                         rendered="#{loginBean.canManageTestCase()}">
                                             <f:ajax execute="@this" render="@form" />
                                         </h:commandButton>
-                                        <h:commandButton value="Delete" action="#{testCaseBean.deleteTestCase(testCase)}" styleClass="secondary-button" immediate="true">
+                                        <h:commandButton value="Delete" action="#{testCaseBean.deleteTestCase(testCase)}" styleClass="secondary-button" immediate="true"
+                                                         rendered="#{loginBean.canManageTestCase()}">
                                             <f:ajax execute="@this" render="@form" />
                                         </h:commandButton>
                                     </div>
@@ -265,38 +278,43 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'test' and loginBean.canAccessTest()}">
+                <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'test'}">
                     <h3>Tests</h3>
                     <p class="section-intro">Create tests and assign available test cases to them.</p>
+                    <h:panelGroup rendered="#{not empty loginBean.testPermissionNote}">
+                        <div class="permission-note">#{loginBean.testPermissionNote}</div>
+                    </h:panelGroup>
 
                     <div class="panel-grid">
-                        <h:panelGroup id="createTestCard" layout="block" styleClass="form-card">
+                        <h:panelGroup id="createTestCard" layout="block" styleClass="form-card #{loginBean.canCreateTest() ? '' : 'locked-card'}">
                             <h4>Create Test</h4>
                             <div class="field-grid">
                                 <h:outputLabel value="Name" for="testName" />
                                 <h:inputText id="testName" value="#{testBean.name}" required="true"
+                                             disabled="#{not loginBean.canCreateTest()}"
                                              requiredMessage="Test name is required." />
                             </div>
 
                             <div class="button-row">
-                                <h:commandButton value="Create Test" action="#{testBean.createTest}" styleClass="action-button">
+                                <h:commandButton value="Create Test" action="#{testBean.createTest}" styleClass="action-button"
+                                                 disabled="#{not loginBean.canCreateTest()}">
                                     <f:ajax execute="@this testName" render="assignTestCard testListCard" />
                                 </h:commandButton>
                             </div>
                         </h:panelGroup>
 
-                        <h:panelGroup id="assignTestCard" layout="block" styleClass="form-card">
+                        <h:panelGroup id="assignTestCard" layout="block" styleClass="form-card #{loginBean.hasRole('TM') ? '' : 'locked-card'}">
                             <h4>Assign TestCase To Test</h4>
                             <div class="field-grid">
                                 <h:outputLabel value="Test" for="assignTest" />
-                                <h:selectOneMenu id="assignTest" value="#{testBean.selectedTestId}">
+                                <h:selectOneMenu id="assignTest" value="#{testBean.selectedTestId}" disabled="#{not loginBean.hasRole('TM')}">
                                     <f:selectItem itemLabel="Select test" itemValue="#{null}" />
-                                    <f:selectItems value="#{testBean.tests}" var="test"
+                                    <f:selectItems value="#{testBean.assignableTests}" var="test"
                                                    itemValue="#{test.id}" itemLabel="#{test.id} - #{test.name}" />
                                 </h:selectOneMenu>
 
                                 <h:outputLabel value="TestCase" for="assignTestCase" />
-                                <h:selectOneMenu id="assignTestCase" value="#{testBean.selectedTestCaseId}">
+                                <h:selectOneMenu id="assignTestCase" value="#{testBean.selectedTestCaseId}" disabled="#{not loginBean.hasRole('TM')}">
                                     <f:selectItem itemLabel="Select testcase" itemValue="#{null}" />
                                     <f:selectItems value="#{testBean.availableTestCases}" var="availableTestCase"
                                                    itemValue="#{availableTestCase.id}" itemLabel="#{availableTestCase.id} - #{availableTestCase.name}" />
@@ -304,7 +322,8 @@
                             </div>
 
                             <div class="button-row">
-                                <h:commandButton value="Assign TestCase" action="#{testBean.assignSelectedTestCase}" styleClass="secondary-button">
+                                <h:commandButton value="Assign TestCase" action="#{testBean.assignSelectedTestCase}" styleClass="secondary-button"
+                                                 disabled="#{not loginBean.hasRole('TM')}">
                                     <f:ajax execute="@this assignTest assignTestCase" render="assignTestCard testListCard" />
                                 </h:commandButton>
                             </div>
@@ -341,7 +360,8 @@
                                                     <span>#{assignedTestCase.name}</span>
                                                     <h:commandButton value="Unassign"
                                                                      action="#{testBean.unassignTestCase(assignedTestCase)}"
-                                                                     styleClass="secondary-button">
+                                                                     styleClass="secondary-button"
+                                                                     rendered="#{loginBean.canAssignTestCase(test)}">
                                                         <f:ajax execute="@this" render="testListCard assignTestCard" />
                                                     </h:commandButton>
                                                 </div>
@@ -352,7 +372,8 @@
                                 <h:column>
                                     <f:facet name="header">Action</f:facet>
                                     <div class="button-row">
-                                        <h:commandButton value="Delete" action="#{testBean.deleteTest(test)}" styleClass="secondary-button" immediate="true">
+                                        <h:commandButton value="Delete" action="#{testBean.deleteTest(test)}" styleClass="secondary-button" immediate="true"
+                                                         rendered="#{loginBean.canManageTest(test)}">
                                             <f:ajax execute="@this" render="testListCard assignTestCard" />
                                         </h:commandButton>
                                     </div>
@@ -362,26 +383,31 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'report' and loginBean.canAccessReport()}">
+                <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'report'}">
                     <h3>Test Reports</h3>
                     <p class="section-intro">Capture the result of a test execution and keep a simple report list.</p>
+                    <h:panelGroup rendered="#{not empty loginBean.reportPermissionNote}">
+                        <div class="permission-note">#{loginBean.reportPermissionNote}</div>
+                    </h:panelGroup>
 
                     <div class="panel-grid">
-                        <div class="form-card">
+                        <div class="form-card #{loginBean.canCreateReport() ? '' : 'locked-card'}">
                             <h4>Create TestReport</h4>
                             <div class="field-grid">
                                 <h:outputLabel value="Name" for="reportName" />
                                 <h:inputText id="reportName" value="#{testReportBean.name}" required="true"
+                                             disabled="#{not loginBean.canCreateReport()}"
                                              requiredMessage="Test report name is required." />
 
                                 <h:outputLabel value="Status" for="reportStatus" />
-                                <h:selectOneMenu id="reportStatus" value="#{testReportBean.status}">
+                                <h:selectOneMenu id="reportStatus" value="#{testReportBean.status}" disabled="#{not loginBean.canCreateReport()}">
                                     <f:selectItem itemLabel="Failed" itemValue="failed" />
                                     <f:selectItem itemLabel="Passed" itemValue="passed" />
                                 </h:selectOneMenu>
 
                                 <h:outputLabel value="Test" for="reportTest" />
                                 <h:selectOneMenu id="reportTest" value="#{testReportBean.selectedTestId}" required="true"
+                                                 disabled="#{not loginBean.canCreateReport()}"
                                                  requiredMessage="A test must be selected.">
                                     <f:selectItem itemLabel="Select test" itemValue="#{null}" />
                                     <f:selectItems value="#{testReportBean.availableTests}" var="test"
@@ -390,7 +416,8 @@
                             </div>
 
                             <div class="button-row">
-                                <h:commandButton value="Create TestReport" action="#{testReportBean.createTestReport}" styleClass="action-button" />
+                                <h:commandButton value="Create TestReport" action="#{testReportBean.createTestReport}" styleClass="action-button"
+                                                 disabled="#{not loginBean.canCreateReport()}" />
                             </div>
                         </div>
 
@@ -419,7 +446,8 @@
                                 </h:column>
                                 <h:column>
                                     <f:facet name="header">Action</f:facet>
-                                    <h:commandButton value="Delete" action="#{testReportBean.deleteTestReport(report)}" styleClass="secondary-button" immediate="true">
+                                    <h:commandButton value="Delete" action="#{testReportBean.deleteTestReport(report)}" styleClass="secondary-button" immediate="true"
+                                                     rendered="#{loginBean.canDeleteReport(report)}">
                                         <f:ajax execute="@this" render="@form" />
                                     </h:commandButton>
                                 </h:column>
@@ -428,25 +456,31 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'task' and loginBean.canAccessTask()}">
+                <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'task'}">
                     <h3>Tasks</h3>
                     <p class="section-intro">Track practical work items and their progress.</p>
+                    <h:panelGroup rendered="#{not empty loginBean.taskPermissionNote}">
+                        <div class="permission-note">#{loginBean.taskPermissionNote}</div>
+                    </h:panelGroup>
 
                     <div class="panel-grid">
-                        <div class="form-card">
+                        <div class="form-card #{loginBean.canCreateTask() ? '' : 'locked-card'}">
                             <h4>Create Task</h4>
                             <div class="field-grid">
                                 <h:outputLabel value="Name" for="taskName" />
                                 <h:inputText id="taskName" value="#{taskBean.name}" required="true"
+                                             disabled="#{not loginBean.canCreateTask()}"
                                              requiredMessage="Task name is required." />
 
                                 <h:outputLabel value="Description" for="taskDescription" />
                                 <h:inputTextarea id="taskDescription" value="#{taskBean.description}" rows="3" cols="30"
+                                                 disabled="#{not loginBean.canCreateTask()}"
                                                  required="true" requiredMessage="Task description is required." />
                             </div>
 
                             <div class="button-row">
-                                <h:commandButton value="#{taskBean.editing ? 'Save Task' : 'Create Task'}" action="#{taskBean.createTask}" styleClass="action-button" />
+                                <h:commandButton value="#{taskBean.editing ? 'Save Task' : 'Create Task'}" action="#{taskBean.createTask}" styleClass="action-button"
+                                                 disabled="#{not loginBean.canCreateTask()}" />
                                 <h:commandButton value="Cancel" action="#{taskBean.cancelEdit}" styleClass="secondary-button"
                                                  rendered="#{taskBean.editing}" immediate="true">
                                     <f:ajax execute="@this" render="@form" />
@@ -479,7 +513,7 @@
                                 </h:column>
                                 <h:column>
                                     <f:facet name="header">Action</f:facet>
-                                    <h:panelGroup rendered="#{task.status != 'done'}">
+                                    <h:panelGroup rendered="#{task.status != 'done' and loginBean.canManageTask(task)}">
                                         <div class="button-row">
                                             <h:commandButton value="Mark as done" action="#{taskBean.markAsDone(task)}" styleClass="secondary-button">
                                                 <f:ajax execute="@this" render="@form" />
@@ -492,7 +526,7 @@
                                             </h:commandButton>
                                         </div>
                                     </h:panelGroup>
-                                    <h:panelGroup rendered="#{task.status == 'done'}">
+                                    <h:panelGroup rendered="#{task.status == 'done' and loginBean.canManageTask(task)}">
                                         <div class="button-row">
                                             Completed
                                             <h:commandButton value="Edit" action="#{taskBean.editTask(task)}" styleClass="secondary-button" immediate="true">
@@ -502,6 +536,9 @@
                                             <f:ajax execute="@this" render="@form" />
                                             </h:commandButton>
                                         </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{not loginBean.canManageTask(task)}">
+                                        View only
                                     </h:panelGroup>
                                 </h:column>
                             </h:dataTable>

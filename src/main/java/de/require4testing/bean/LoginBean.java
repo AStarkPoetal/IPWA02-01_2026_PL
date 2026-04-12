@@ -44,7 +44,7 @@ public class LoginBean implements Serializable {
         currentUser = null;
         currentUserId = null;
         password = "";
-        return "login.xhtml?faces-redirect=true";
+        return "dashboard.xhtml?faces-redirect=true";
     }
 
     // GETTER / SETTER

@@ -119,6 +119,36 @@ public class TestCaseService {
         }
     }
 
+    public boolean unassignFromTest(Integer testCaseId) {
+        if (testCaseId == null) {
+            return false;
+        }
+
+        EntityManager entityManager = JpaUtil.createEntityManager();
+
+        try {
+            entityManager.getTransaction().begin();
+
+            TestCase managedTestCase = entityManager.find(TestCase.class, testCaseId);
+            if (managedTestCase == null || managedTestCase.getTest() == null) {
+                entityManager.getTransaction().rollback();
+                return false;
+            }
+
+            Test managedTest = managedTestCase.getTest();
+            managedTestCase.setTest(null);
+            moveTestBackToOpenIfNeeded(entityManager, managedTest);
+
+            entityManager.getTransaction().commit();
+            return true;
+        } finally {
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+            entityManager.close();
+        }
+    }
+
     public boolean delete(Integer testCaseId) {
         if (testCaseId == null) {
             return false;
@@ -165,6 +195,22 @@ public class TestCaseService {
 
         if ("open".equals(test.getStatus())) {
             test.setStatus("in_progress");
+        }
+    }
+
+    private void moveTestBackToOpenIfNeeded(EntityManager entityManager, Test test) {
+        if (test == null || test.getStatus() == null || !"in_progress".equals(test.getStatus())) {
+            return;
+        }
+
+        Long assignedCount = entityManager.createQuery(
+                        "SELECT COUNT(tc) FROM TestCase tc WHERE tc.test.id = :testId",
+                        Long.class)
+                .setParameter("testId", test.getId())
+                .getSingleResult();
+
+        if (assignedCount == 0) {
+            test.setStatus("open");
         }
     }
 }

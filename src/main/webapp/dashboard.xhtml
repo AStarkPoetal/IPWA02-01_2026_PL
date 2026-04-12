@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
-      xmlns:f="jakarta.faces.core">
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
 
 <h:head>
     <title>Dashboard</title>
@@ -27,9 +28,26 @@
                             <h:commandButton value="Logout" action="#{loginBean.logout}" styleClass="secondary-button" immediate="true" />
                         </div>
                     </h:panelGroup>
+
+                    <h:panelGroup rendered="#{not loginBean.loggedIn}" layout="block" styleClass="user-box auth-box">
+                        <strong>Login</strong>
+                        <p>Sign in to access the dashboard modules.</p>
+                        <div class="auth-grid">
+                            <h:outputLabel value="Email" for="heroLoginEmail" />
+                            <h:inputText id="heroLoginEmail" value="#{loginBean.email}" required="true"
+                                         requiredMessage="Email is required." />
+
+                            <h:outputLabel value="Password" for="heroLoginPassword" />
+                            <h:inputSecret id="heroLoginPassword" value="#{loginBean.password}" required="true"
+                                           requiredMessage="Password is required." />
+                        </div>
+                        <div class="button-row">
+                            <h:commandButton value="Login" action="#{loginBean.login}" styleClass="action-button" />
+                        </div>
+                    </h:panelGroup>
                 </div>
 
-                <div class="nav-bar">
+                <h:panelGroup rendered="#{loginBean.loggedIn}" layout="block" styleClass="nav-bar">
                     <h:commandButton value="Home" action="#{dashboardBean.showPanel('home')}" styleClass="nav-button" immediate="true" />
                     <h:commandButton value="Requirements" action="#{dashboardBean.showPanel('requirement')}" styleClass="nav-button" immediate="true"
                                      rendered="#{loginBean.canAccessRequirement()}" />
@@ -41,7 +59,7 @@
                                      rendered="#{loginBean.canAccessReport()}" />
                     <h:commandButton value="Tasks" action="#{dashboardBean.showPanel('task')}" styleClass="nav-button" immediate="true"
                                      rendered="#{loginBean.canAccessTask()}" />
-                </div>
+                </h:panelGroup>
             </section>
 
             <div class="message-box">
@@ -49,7 +67,31 @@
             </div>
 
             <section class="content-card">
-                <h:panelGroup rendered="#{dashboardBean.activePanel == 'home'}">
+                <h:panelGroup rendered="#{not loginBean.loggedIn}">
+                    <h3>Welcome</h3>
+                    <p class="section-intro">The dashboard stays hidden until you log in. Use the login box in the top right corner to continue.</p>
+
+                    <div class="home-grid">
+                        <div class="home-card">
+                            <h4>Requirements</h4>
+                            <p>Create and track requirements through their lifecycle.</p>
+                        </div>
+                        <div class="home-card">
+                            <h4>Test Cases</h4>
+                            <p>Connect expected results to requirements and tests.</p>
+                        </div>
+                        <div class="home-card">
+                            <h4>Tests &amp; Reports</h4>
+                            <p>Manage execution flow and store test outcomes.</p>
+                        </div>
+                        <div class="home-card">
+                            <h4>Tasks</h4>
+                            <p>Track work items for the assigned users.</p>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'home'}">
                     <h3>Welcome</h3>
                     <p class="section-intro">Choose a module to create and manage your testing data.</p>
 
@@ -73,7 +115,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{dashboardBean.activePanel == 'requirement' and loginBean.canAccessRequirement()}">
+                <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'requirement' and loginBean.canAccessRequirement()}">
                     <h3>Requirements</h3>
                     <p class="section-intro">Create new requirements and review the current list.</p>
 
@@ -144,7 +186,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{dashboardBean.activePanel == 'testcase' and loginBean.canAccessTestCase()}">
+                <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'testcase' and loginBean.canAccessTestCase()}">
                     <h3>Test Cases</h3>
                     <p class="section-intro">Create test cases and bind them to existing requirements.</p>
 
@@ -223,7 +265,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{dashboardBean.activePanel == 'test' and loginBean.canAccessTest()}">
+                <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'test' and loginBean.canAccessTest()}">
                     <h3>Tests</h3>
                     <p class="section-intro">Create tests and assign available test cases to them.</p>
 
@@ -289,12 +331,28 @@
                                 </h:column>
                                 <h:column>
                                     <f:facet name="header">Assigned TestCases</f:facet>
-                                    #{test.testCases.size()}
+                                    <h:panelGroup rendered="#{empty test.testCases}">
+                                        0
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{not empty test.testCases}">
+                                        <div class="stack-list">
+                                            <ui:repeat value="#{test.testCases}" var="assignedTestCase">
+                                                <div class="button-row">
+                                                    <span>#{assignedTestCase.name}</span>
+                                                    <h:commandButton value="Unassign"
+                                                                     action="#{testBean.unassignTestCase(assignedTestCase)}"
+                                                                     styleClass="secondary-button">
+                                                        <f:ajax execute="@this" render="testListCard assignTestCard" />
+                                                    </h:commandButton>
+                                                </div>
+                                            </ui:repeat>
+                                        </div>
+                                    </h:panelGroup>
                                 </h:column>
                                 <h:column>
                                     <f:facet name="header">Action</f:facet>
                                     <div class="button-row">
-                                        <h:commandButton value="Delete" action="#{testBean.deleteTest(test)}" styleClass="secondary-button">
+                                        <h:commandButton value="Delete" action="#{testBean.deleteTest(test)}" styleClass="secondary-button" immediate="true">
                                             <f:ajax execute="@this" render="testListCard assignTestCard" />
                                         </h:commandButton>
                                     </div>
@@ -304,7 +362,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{dashboardBean.activePanel == 'report' and loginBean.canAccessReport()}">
+                <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'report' and loginBean.canAccessReport()}">
                     <h3>Test Reports</h3>
                     <p class="section-intro">Capture the result of a test execution and keep a simple report list.</p>
 
@@ -361,14 +419,16 @@
                                 </h:column>
                                 <h:column>
                                     <f:facet name="header">Action</f:facet>
-                                    <h:commandButton value="Delete" action="#{testReportBean.deleteTestReport(report)}" styleClass="secondary-button" />
+                                    <h:commandButton value="Delete" action="#{testReportBean.deleteTestReport(report)}" styleClass="secondary-button" immediate="true">
+                                        <f:ajax execute="@this" render="@form" />
+                                    </h:commandButton>
                                 </h:column>
                             </h:dataTable>
                         </div>
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{dashboardBean.activePanel == 'task' and loginBean.canAccessTask()}">
+                <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'task' and loginBean.canAccessTask()}">
                     <h3>Tasks</h3>
                     <p class="section-intro">Track practical work items and their progress.</p>
 

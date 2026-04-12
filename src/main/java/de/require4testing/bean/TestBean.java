@@ -92,6 +92,24 @@ public class TestBean implements Serializable {
         addErrorMessage("Test could not be deleted. It may still be referenced by a TestCase or TestReport.");
     }
 
+    public void unassignTestCase(TestCase testCase) {
+        if (!loginBean.canAccessTest()) {
+            addErrorMessage("You are not allowed to manage tests.");
+            return;
+        }
+
+        if (testCase == null || testCase.getId() <= 0) {
+            return;
+        }
+
+        if (testCaseService.unassignFromTest(testCase.getId())) {
+            addInfoMessage("TestCase unassigned successfully.");
+            return;
+        }
+
+        addErrorMessage("The selected TestCase could not be unassigned.");
+    }
+
     public List<TestCase> getAvailableTestCases() {
         return testCaseService.findAll();
     }

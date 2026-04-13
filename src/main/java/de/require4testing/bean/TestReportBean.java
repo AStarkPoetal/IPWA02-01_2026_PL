@@ -138,4 +138,16 @@ public class TestReportBean implements Serializable {
     public List<TestReport> getTestReports() {
         return testReportService.findAll();
     }
+
+    public long getPassedReportCount() {
+        return getTestReports().stream()
+                .filter(report -> "passed".equals(report.getStatus()))
+                .count();
+    }
+
+    public long getFailedReportCount() {
+        return getTestReports().stream()
+                .filter(report -> "failed".equals(report.getStatus()))
+                .count();
+    }
 }

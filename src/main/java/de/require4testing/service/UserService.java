@@ -3,7 +3,8 @@ package de.require4testing.service;
 import de.require4testing.model.User;
 import de.require4testing.persistence.JpaUtil;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceException;
+
+import java.util.List;
 
 public class UserService {
 
@@ -53,6 +54,20 @@ public class UserService {
                     .getResultStream()
                     .findFirst()
                     .orElse(null);
+        } finally {
+            entityManager.close();
+        }
+    }
+
+    public List<User> findAllTesters() {
+        EntityManager entityManager = JpaUtil.createEntityManager();
+
+        try {
+            return entityManager.createQuery(
+                            "SELECT u FROM User u WHERE u.role = :role ORDER BY u.name, u.id",
+                            User.class)
+                    .setParameter("role", "T")
+                    .getResultList();
         } finally {
             entityManager.close();
         }

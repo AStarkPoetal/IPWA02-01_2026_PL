@@ -33,6 +33,10 @@ public class Test {
     @JoinColumn(name = "Created_by")
     private User createdBy;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Assigned_tester")
+    private User assignedTester;
+
     @OneToMany(mappedBy = "test")
     private List<TestCase> testCases = new ArrayList<>();
 
@@ -79,6 +83,14 @@ public class Test {
 
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public User getAssignedTester() {
+        return assignedTester;
+    }
+
+    public void setAssignedTester(User assignedTester) {
+        this.assignedTester = assignedTester;
     }
 
     public List<TestCase> getTestCases() {

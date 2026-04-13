@@ -21,6 +21,11 @@ public class TestService {
                 test.setCreatedBy(managedUser);
             }
 
+            if (test.getAssignedTester() != null && test.getAssignedTester().getId() > 0) {
+                User managedTester = entityManager.getReference(User.class, test.getAssignedTester().getId());
+                test.setAssignedTester(managedTester);
+            }
+
             entityManager.persist(test);
             entityManager.getTransaction().commit();
         } finally {
@@ -39,6 +44,7 @@ public class TestService {
                             "SELECT DISTINCT t FROM Test t " +
                                     "LEFT JOIN FETCH t.testCases " +
                                     "LEFT JOIN FETCH t.createdBy " +
+                                    "LEFT JOIN FETCH t.assignedTester " +
                                     "ORDER BY " +
                                     "CASE " +
                                     "WHEN t.status = 'open' THEN 0 " +
@@ -72,8 +78,51 @@ public class TestService {
 
         try {
             entityManager.getTransaction().begin();
+            if (test.getCreatedBy() != null && test.getCreatedBy().getId() > 0) {
+                User managedUser = entityManager.getReference(User.class, test.getCreatedBy().getId());
+                test.setCreatedBy(managedUser);
+            }
+
+            if (test.getAssignedTester() != null && test.getAssignedTester().getId() > 0) {
+                User managedTester = entityManager.getReference(User.class, test.getAssignedTester().getId());
+                test.setAssignedTester(managedTester);
+            }
+
             entityManager.merge(test);
             entityManager.getTransaction().commit();
+        } finally {
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+            entityManager.close();
+        }
+    }
+
+    public boolean assignTester(Integer testId, Integer testerId) {
+        if (testId == null || testerId == null) {
+            return false;
+        }
+
+        EntityManager entityManager = JpaUtil.createEntityManager();
+
+        try {
+            entityManager.getTransaction().begin();
+
+            Test managedTest = entityManager.find(Test.class, testId);
+            if (managedTest == null) {
+                entityManager.getTransaction().rollback();
+                return false;
+            }
+
+            User managedTester = entityManager.find(User.class, testerId);
+            if (managedTester == null || !"T".equals(managedTester.getRole())) {
+                entityManager.getTransaction().rollback();
+                return false;
+            }
+
+            managedTest.setAssignedTester(managedTester);
+            entityManager.getTransaction().commit();
+            return true;
         } finally {
             if (entityManager.getTransaction().isActive()) {
                 entityManager.getTransaction().rollback();

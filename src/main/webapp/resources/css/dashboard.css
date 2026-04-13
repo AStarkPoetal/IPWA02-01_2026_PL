@@ -7,9 +7,9 @@ body {
 }
 
 .page-shell {
-    max-width: 1200px;
+    max-width: 1520px;
     margin: 0 auto;
-    padding: 32px 20px 48px;
+    padding: 32px 24px 48px;
 }
 
 .hero {
@@ -134,8 +134,13 @@ body {
 
 .panel-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
     gap: 22px;
+}
+
+.tests-panel-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
 }
 
 .form-card,
@@ -145,6 +150,44 @@ body {
     border: 1px solid #dbe6ef;
     border-radius: 14px;
     padding: 18px;
+}
+
+.summary-card {
+    background: #eef6fb;
+    border: 1px solid #d6e6f2;
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 20px;
+}
+
+.summary-card h4 {
+    margin: 0 0 14px;
+    color: #12324a;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+}
+
+.summary-item {
+    background: #ffffff;
+    border: 1px solid #dbe6ef;
+    border-radius: 12px;
+    padding: 14px;
+}
+
+.summary-item strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #12324a;
+}
+
+.summary-item span {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f5f7a;
 }
 
 .locked-card {
@@ -202,9 +245,18 @@ textarea {
     overflow-x: auto;
 }
 
+.wide-table-card {
+    grid-column: 1 / -1;
+}
+
+.tests-list-card {
+    margin-top: 22px;
+    width: 100%;
+}
+
 table {
     width: 100%;
-    min-width: 520px;
+    min-width: 460px;
     border-collapse: collapse;
     background: #ffffff;
     border-radius: 12px;
@@ -223,6 +275,14 @@ th {
     background: #eaf2f8;
     color: #12324a;
     font-weight: 700;
+}
+
+.table-card table tbody tr:nth-child(odd) > td {
+    background: #ffffff;
+}
+
+.table-card table tbody tr:nth-child(even) > td {
+    background: #eaf4fb;
 }
 
 .empty-state {
@@ -274,6 +334,14 @@ th {
 
     .panel-grid {
         grid-template-columns: 1fr;
+    }
+
+    .tests-panel-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .wide-table-card {
+        grid-column: span 1;
     }
 }
 

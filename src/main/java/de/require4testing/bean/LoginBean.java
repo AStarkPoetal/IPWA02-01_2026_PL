@@ -136,7 +136,7 @@ public class LoginBean implements Serializable {
     }
 
     public boolean canCreateReportForTest(Test test) {
-        return hasRole(UserRoles.TEST_MANAGER) || (hasRole(UserRoles.TESTER) && isOwnTest(test));
+        return hasRole(UserRoles.TEST_MANAGER) || (hasRole(UserRoles.TESTER) && isAssignedTester(test));
     }
 
     public boolean canDeleteReport(TestReport testReport) {
@@ -255,6 +255,14 @@ public class LoginBean implements Serializable {
                 && testReport != null
                 && testReport.getUser() != null
                 && testReport.getUser().getId() == user.getId();
+    }
+
+    private boolean isAssignedTester(Test test) {
+        User user = getCurrentUser();
+        return user != null
+                && test != null
+                && test.getAssignedTester() != null
+                && test.getAssignedTester().getId() == user.getId();
     }
 
     private void addErrorMessage(String message) {

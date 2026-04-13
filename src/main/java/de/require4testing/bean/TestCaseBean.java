@@ -187,6 +187,19 @@ public class TestCaseBean implements Serializable {
         return testCaseService.findAll();
     }
 
+    public List<TestCase> getAssignedTestCasesForCurrentTester() {
+        return getTestCases().stream()
+                .filter(testCase -> testCase.getTest() != null)
+                .filter(testCase -> testCase.getTest().getAssignedTester() != null)
+                .filter(testCase -> loginBean.getCurrentUser() != null)
+                .filter(testCase -> testCase.getTest().getAssignedTester().getId() == loginBean.getCurrentUser().getId())
+                .toList();
+    }
+
+    public long getAssignedTestCaseCountForCurrentTester() {
+        return getAssignedTestCasesForCurrentTester().size();
+    }
+
     public boolean isEditing() {
         return editingTestCaseId != null;
     }

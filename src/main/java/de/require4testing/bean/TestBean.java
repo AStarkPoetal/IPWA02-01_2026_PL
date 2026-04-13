@@ -2,8 +2,10 @@ package de.require4testing.bean;
 
 import de.require4testing.model.Test;
 import de.require4testing.model.TestCase;
+import de.require4testing.model.User;
 import de.require4testing.service.TestCaseService;
 import de.require4testing.service.TestService;
+import de.require4testing.service.UserService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -19,10 +21,13 @@ public class TestBean implements Serializable {
 
     private final TestService testService = new TestService();
     private final TestCaseService testCaseService = new TestCaseService();
+    private final UserService userService = new UserService();
 
     private String name;
     private Integer selectedTestId;
     private Integer selectedTestCaseId;
+    private Integer selectedTesterTestId;
+    private Integer selectedTesterId;
 
     @Inject
     private LoginBean loginBean;
@@ -111,6 +116,32 @@ public class TestBean implements Serializable {
         addErrorMessage("The selected TestCase could not be unassigned.");
     }
 
+    public void assignTester() {
+        if (selectedTesterTestId == null) {
+            addErrorMessage("A test must be selected.");
+            return;
+        }
+
+        Test selectedTest = findTestById(selectedTesterTestId);
+        if (!loginBean.canAssignTestCase(selectedTest)) {
+            addErrorMessage("You are not allowed to assign a tester to this test.");
+            return;
+        }
+
+        if (selectedTesterId == null) {
+            addErrorMessage("A tester must be selected.");
+            return;
+        }
+
+        if (testService.assignTester(selectedTesterTestId, selectedTesterId)) {
+            selectedTesterId = null;
+            addInfoMessage("Tester assigned successfully.");
+            return;
+        }
+
+        addErrorMessage("The selected tester could not be assigned to the selected test.");
+    }
+
     public List<TestCase> getAvailableTestCases() {
         return testCaseService.findAll();
     }
@@ -133,6 +164,10 @@ public class TestBean implements Serializable {
         }
 
         return null;
+    }
+
+    public List<User> getAvailableTesters() {
+        return userService.findAllTesters();
     }
 
     private void addErrorMessage(String message) {
@@ -167,7 +202,41 @@ public class TestBean implements Serializable {
         this.selectedTestCaseId = selectedTestCaseId;
     }
 
+    public Integer getSelectedTesterTestId() {
+        return selectedTesterTestId;
+    }
+
+    public void setSelectedTesterTestId(Integer selectedTesterTestId) {
+        this.selectedTesterTestId = selectedTesterTestId;
+    }
+
+    public Integer getSelectedTesterId() {
+        return selectedTesterId;
+    }
+
+    public void setSelectedTesterId(Integer selectedTesterId) {
+        this.selectedTesterId = selectedTesterId;
+    }
+
     public List<Test> getTests() {
         return testService.findAll();
+    }
+
+    public long getOpenTestCount() {
+        return getTests().stream()
+                .filter(test -> "open".equals(test.getStatus()))
+                .count();
+    }
+
+    public long getInProgressTestCount() {
+        return getTests().stream()
+                .filter(test -> "in_progress".equals(test.getStatus()))
+                .count();
+    }
+
+    public long getDoneTestCount() {
+        return getTests().stream()
+                .filter(test -> "done".equals(test.getStatus()))
+                .count();
     }
 }

@@ -14,6 +14,10 @@ import java.util.List;
 
 @Named
 @SessionScoped
+/**
+ * Verwaltung von TestReport Bean.
+ * Erstellung von einem Report, aber Update durch dem Service durchgeführt wird.
+ */
 public class TestReportBean implements Serializable {
 
     private final TestReportService testReportService = new TestReportService();
@@ -28,6 +32,9 @@ public class TestReportBean implements Serializable {
     @Inject
     private TestBean testBean;
 
+    /**
+     * Das Report gehört immer zu einem konkreten Test und aktuellen Benutzer. Zugriff wird vor der Speicherung geprüft.
+     */
     public void createTestReport() {
         if (!loginBean.canAccessReport()) {
             addErrorMessage("You are not allowed to manage test reports.");
@@ -84,6 +91,7 @@ public class TestReportBean implements Serializable {
     }
 
     public List<Test> getAvailableTests() {
+        // Das Dropdown zeigt nur die Tests an, für die der jeweilige Benutzer tatsächlich einen Report schreiben darf.
         return testBean.getTests().stream()
                 .filter(loginBean::canCreateReportForTest)
                 .toList();

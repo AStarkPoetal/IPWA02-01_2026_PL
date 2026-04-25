@@ -16,6 +16,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "Test")
+/**
+ * Entität, die einen konkreten Testlauf repräsentiert. Sie kann mit einem Creator-Benutzer, einem zugewiesenen Tester,
+ * Testfällen und Reports verknüpft sein.
+ */
 public class Test {
 
     @Id

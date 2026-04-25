@@ -12,6 +12,9 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "Task")
+/**
+ * Entität, die eine einfache organisatorische Aufgabe repräsentiert. Jede Aufgabe ist einem konkreten Benutzer zugeordnet.
+ */
 public class Task {
 
     @Id

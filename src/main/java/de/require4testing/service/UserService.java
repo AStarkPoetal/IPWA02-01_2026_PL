@@ -8,6 +8,9 @@ import java.util.List;
 
 public class UserService {
 
+    /**
+     * Abruf des aus der Session geladenen Benutzers anhand seiner ID.
+     */
     public User findById(Integer id) {
         if (id == null) {
             return null;
@@ -22,6 +25,9 @@ public class UserService {
         }
     }
 
+    /**
+     * Hilfsabfrage anhand der E-Mail-Adresse.
+     */
     public User findByEmail(String email) {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
@@ -38,6 +44,9 @@ public class UserService {
         }
     }
 
+    /**
+     * Der Login erfolgt derzeit über einen einfachen Vergleich von E-Mail und Passwort.
+     */
     public User authenticate(String email, String password) {
         if (email == null || password == null) {
             return null;
@@ -59,6 +68,9 @@ public class UserService {
         }
     }
 
+    /**
+     * Für das Tester-Assignment-Dropdown werden nur Benutzer mit der Rolle „T“ zurückgegeben.
+     */
     public List<User> findAllTesters() {
         EntityManager entityManager = JpaUtil.createEntityManager();
 

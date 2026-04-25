@@ -10,6 +10,9 @@ import java.util.List;
 
 public class TaskService {
 
+    /**
+     * Vor dem Speichern wird die Benutzerbeziehung in eine verwaltete JPA-Referenz umgewandelt.
+     */
     public void create(Task task) {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
@@ -44,6 +47,9 @@ public class TaskService {
         }
     }
 
+    /**
+     * Bearbeiten von Task mit der voll - Entität Speicherung.
+     */
     public void update(Task task) {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
@@ -65,6 +71,9 @@ public class TaskService {
         }
     }
 
+    /**
+     * Schnell Helper Oparetion für schnell Umsetzung von Status.
+     */
     public void updateStatus(Integer taskId, String newStatus) {
         if (taskId == null || newStatus == null || newStatus.isBlank()) {
             return;

@@ -13,6 +13,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "User")
+/**
+ * Entität, die den Benutzer des Systems mit Rolleninformationen repräsentiert. Dieselbe Entität wird für Login,
+ * Berechtigungen und Datensatzbeziehungen verwendet.
+ */
 public class User {
 
     @Id

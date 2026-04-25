@@ -11,6 +11,9 @@ import java.util.List;
 
 public class TestCaseService {
 
+    /**
+     * Bei der Speicherung von neu TestCase, der Status von Requirement wird automatische updated.
+     */
     public void create(TestCase testCase) {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
@@ -64,6 +67,9 @@ public class TestCaseService {
         }
     }
 
+    /**
+     * Nach dem Update wird die Requirement-Statuslogik ebenfalls ausgeführt.
+     */
     public void update(TestCase testCase) {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
@@ -80,6 +86,10 @@ public class TestCaseService {
         }
     }
 
+    /**
+     * Verknüpfung eines Testfalls mit einem Test.
+     * Wenn dies die erste Zuweisung ist, wechselt der Test vom Status „open“ in „in_progress“.
+     */
     public boolean assignToTest(Integer testCaseId, Integer testId) {
         if (testCaseId == null || testId == null) {
             return false;
@@ -119,6 +129,10 @@ public class TestCaseService {
         }
     }
 
+    /**
+     * Beim Entfernen wird geprüft, ob dem Test noch Testfälle zugeordnet sind. Falls nicht, kann der Test wieder
+     * in den Status „open“ zurückgesetzt werden.
+     */
     public boolean unassignFromTest(Integer testCaseId) {
         if (testCaseId == null) {
             return false;
@@ -178,6 +192,9 @@ public class TestCaseService {
         }
     }
 
+    /**
+     * Requirement-Statuslogik: Wenn bereits Testfälle zugeordnet sind, soll der Status nicht „new“ bleiben.
+     */
     private void moveRequirementToInProgress(Requirement requirement) {
         if (requirement == null || requirement.getStatus() == null) {
             return;
@@ -188,6 +205,9 @@ public class TestCaseService {
         }
     }
 
+    /**
+     * Test-Statuslogik: Nach der Zuweisung wechselt der Status von „open“ zu „in_progress“.
+     */
     private void moveTestToInProgress(Test test) {
         if (test == null || test.getStatus() == null) {
             return;
@@ -198,6 +218,9 @@ public class TestCaseService {
         }
     }
 
+    /**
+     * Wenn alle Testfälle entfernt wurden, wird der Test wieder in den Status „open“ zurückgesetzt.
+     */
     private void moveTestBackToOpenIfNeeded(EntityManager entityManager, Test test) {
         if (test == null || test.getStatus() == null || !"in_progress".equals(test.getStatus())) {
             return;

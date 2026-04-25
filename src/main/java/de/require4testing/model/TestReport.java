@@ -12,6 +12,9 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "TestReport")
+/**
+ * Entität, die den Bericht eines Testlaufs speichert. Sie ist immer einem Test und einem Benutzer zugeordnet.
+ */
 public class TestReport {
 
     @Id

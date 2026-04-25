@@ -1,4 +1,6 @@
-
+/* Zentrale Stylesheet-Datei für das gesamte Dashboard.
+Hier befinden sich das Hauptlayout, das kartenbasierte Design,
+die Tabellen, die Responsive-Regeln sowie die Ausgrauung von Elementen aufgrund von Berechtigungen. */
 body {
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     background: #f4f7fb;
@@ -138,6 +140,7 @@ body {
     gap: 22px;
 }
 
+/* Das Test-Panel ist dreispaltig aufgebaut. */
 .tests-panel-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: start;
@@ -320,6 +323,8 @@ th {
 }
 
 @media (max-width: 900px) {
+    /* Auf kleineren Bildschirmen werden alle Blöcke auf eine Spalte umgebrochen.
+. */
     .page-shell {
         padding: 24px 16px 40px;
     }

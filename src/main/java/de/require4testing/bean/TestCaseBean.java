@@ -15,6 +15,10 @@ import java.util.List;
 
 @Named
 @SessionScoped
+/**
+ * Verwaltung von TestCase.
+ *  Dieses Bean verwaltet die Testfälle zu den Requirements, also das Erstellen, Anzeigen, Bearbeiten und Löschen.
+ */
 public class TestCaseBean implements Serializable {
 
     private final TestCaseService testCaseService = new TestCaseService();
@@ -31,6 +35,10 @@ public class TestCaseBean implements Serializable {
     @Inject
     private LoginBean loginBean;
 
+    /**
+     * Erstellung von TestCase oder update.
+     * Auswahl von einem Requirement ist kein oprional, da jede TestFall zu einem Testcase gehört.
+     */
     public void createTestCase() {
         if (!loginBean.canManageTestCase()) {
             addErrorMessage("You are not allowed to manage test cases.");
@@ -92,6 +100,7 @@ public class TestCaseBean implements Serializable {
             return;
         }
 
+        // Die Felder des Datensatzes werden in das Bearbeitungsformular zurückgeladen.
         editingTestCaseId = testCase.getId();
         name = testCase.getName();
         description = testCase.getDescription();
@@ -188,6 +197,7 @@ public class TestCaseBean implements Serializable {
     }
 
     public List<TestCase> getAssignedTestCasesForCurrentTester() {
+        // Der Tester sieht nur die Testfälle, die zu Tests gehören, bei denen er als zugewiesener Tester eingetragen ist.
         return getTestCases().stream()
                 .filter(testCase -> testCase.getTest() != null)
                 .filter(testCase -> testCase.getTest().getAssignedTester() != null)

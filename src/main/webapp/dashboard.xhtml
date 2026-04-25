@@ -7,6 +7,10 @@
 <h:head>
     <title>Dashboard</title>
     <h:outputStylesheet library="css" name="dashboard.css" />
+    <!--
+        Hier ist zusätzlich ein Inline-Style für die abwechselnde Einfärbung der Tabellenzeilen definiert.
+Dieser ist separat gehalten, um auch zwischengespeicherte alte CSS-Regeln sicher zu überschreiben.
+    -->
     <style type="text/css">
         .table-card table tbody tr:nth-child(odd) > td {
             background: #ffffff !important;
@@ -21,6 +25,7 @@
 <h:body>
     <div class="page-shell">
         <h:form>
+            <!-- Felső hero blokk: cím, login / aktív user doboz, navigáció -->
             <section class="hero">
                 <div class="hero-top">
                     <div>
@@ -66,11 +71,13 @@
                 </h:panelGroup>
             </section>
 
+            <!-- Zentrale Nachrichtenleiste für FacesMessages.-->
             <div class="message-box">
                 <h:messages globalOnly="true" infoStyle="color: green;" errorStyle="color: red;" />
             </div>
 
             <section class="content-card">
+                <!-- Login előtti nyitó nézet -->
                 <h:panelGroup rendered="#{not loginBean.loggedIn}">
                     <h3>Welcome</h3>
                     <p class="section-intro">The dashboard stays hidden until you log in. Use the login box in the top right corner to continue.</p>
@@ -95,6 +102,7 @@
                     </div>
                 </h:panelGroup>
 
+                <!-- Home-Panel: Übersichten und Modulkarten-->
                 <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'home'}">
                     <h3>Welcome</h3>
                     <p class="section-intro">Choose a module to create and manage your testing data.</p>
@@ -178,6 +186,7 @@
                     </div>
                 </h:panelGroup>
 
+                <!-- Requirement Panel -->
                 <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'requirement'}">
                     <h3>Requirements</h3>
                     <p class="section-intro">Create new requirements and review the current list.</p>
@@ -257,6 +266,7 @@
                     </div>
                 </h:panelGroup>
 
+                <!-- TestCase Panel -->
                 <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'testcase'}">
                     <h3>Test Cases</h3>
                     <p class="section-intro">Create test cases and bind them to existing requirements.</p>
@@ -346,6 +356,7 @@
                     </div>
                 </h:panelGroup>
 
+                <!-- Tests Panel: Erstellen + Zuweisung + Liste -->
                 <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'test'}">
                     <h3>Tests</h3>
                     <p class="section-intro">Create tests and assign available test cases to them.</p>
@@ -481,6 +492,7 @@
                     </h:panelGroup>
                 </h:panelGroup>
 
+                <!-- Reports Panel -->
                 <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'report'}">
                     <h3>Test Reports</h3>
                     <p class="section-intro">Capture the result of a test execution and keep a simple report list.</p>
@@ -554,6 +566,7 @@
                     </div>
                 </h:panelGroup>
 
+                <!-- Tasks Panel -->
                 <h:panelGroup rendered="#{loginBean.loggedIn and dashboardBean.activePanel == 'task'}">
                     <h3>Tasks</h3>
                     <p class="section-intro">Track practical work items and their progress.</p>

@@ -12,6 +12,10 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "TestCase")
+/**
+ * Entität, die einen konkreten Testfall repräsentiert. Sie gehört immer zu einer Anforderung und kann optional einem
+ * Test zugeordnet werden.
+ */
 public class TestCase {
 
     @Id

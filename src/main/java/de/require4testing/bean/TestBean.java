@@ -17,6 +17,10 @@ import java.util.List;
 
 @Named
 @SessionScoped
+/**
+ * Verwaltung von Testlauf Bean.
+ * Hier erfolgen das Erstellen von Tests, die Zuweisung von Testfällen, die Auswahl des Testers sowie die Bereitstellung der Testliste.
+ */
 public class TestBean implements Serializable {
 
     private final TestService testService = new TestService();
@@ -32,6 +36,10 @@ public class TestBean implements Serializable {
     @Inject
     private LoginBean loginBean;
 
+    /**
+     * Erstellung von neu Test.
+     * Initial Status ist immer "open".
+     */
     public void createTest() {
         if (!loginBean.canCreateTest()) {
             addErrorMessage("You are not allowed to manage tests.");
@@ -46,6 +54,7 @@ public class TestBean implements Serializable {
         Test test = new Test();
         test.setName(name);
         test.setStatus("open");
+        // Der erstellende Benutzer wird gespeichert, da mehrere Berechtigungsregeln darauf basieren.
         test.setCreatedBy(loginBean.getCurrentUser());
 
         testService.create(test);
@@ -54,6 +63,9 @@ public class TestBean implements Serializable {
         name = "";
     }
 
+    /**
+     * Die UI übergibt zwei IDs (Test + Test Case); die eigentliche Aktualisierung der Beziehung wird vom Service durchgeführt.
+     */
     public void assignSelectedTestCase() {
         if (selectedTestId == null) {
             addErrorMessage("A test must be selected.");
@@ -98,6 +110,9 @@ public class TestBean implements Serializable {
         addErrorMessage("Test could not be deleted. It may still be referenced by a TestCase or TestReport.");
     }
 
+    /**
+     * Beim Entfernen entscheidet der Service, ob der Test wieder in den Status „open“ zurückgesetzt wird.
+     */
     public void unassignTestCase(TestCase testCase) {
         if (testCase == null || !loginBean.canAssignTestCase(testCase.getTest())) {
             addErrorMessage("You are not allowed to manage tests.");
@@ -116,6 +131,9 @@ public class TestBean implements Serializable {
         addErrorMessage("The selected TestCase could not be unassigned.");
     }
 
+    /**
+     * Itt rendeli a TM a kiválasztott tester usert egy konkrét testhez.
+     */
     public void assignTester() {
         if (selectedTesterTestId == null) {
             addErrorMessage("A test must be selected.");
@@ -147,6 +165,7 @@ public class TestBean implements Serializable {
     }
 
     public List<Test> getAssignableTests() {
+        // In den Zuweisungslisten werden nur die Tests angezeigt, die der Benutzer tatsächlich verwalten darf.
         return getTests().stream()
                 .filter(loginBean::canAssignTestCase)
                 .toList();
@@ -222,6 +241,9 @@ public class TestBean implements Serializable {
         return testService.findAll();
     }
 
+    /**
+     * Diese Zähler dienen dem Übersichts-Panel im Manager-Dashboard.
+     */
     public long getOpenTestCount() {
         return getTests().stream()
                 .filter(test -> "open".equals(test.getStatus()))

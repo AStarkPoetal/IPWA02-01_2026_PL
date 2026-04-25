@@ -9,6 +9,9 @@ import java.util.List;
 
 public class RequirementService {
 
+    /**
+     * Insert-Operation für die Requirement-Entität.
+     */
     public void create(Requirement requirement) {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
@@ -24,6 +27,10 @@ public class RequirementService {
         }
     }
 
+    /**
+     * Die Requirement-Liste wird immer direkt aus der Datenbank geladen, sodass die UI auch nach einer Aktualisierung
+     * den aktuellen Zustand widerspiegelt.
+     */
     public List<Requirement> findAll() {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
@@ -35,6 +42,9 @@ public class RequirementService {
         }
     }
 
+    /**
+     * Beim Bearbeiten "merge" aktualisiert den bereits bestehenden Datensatz.
+     */
     public void update(Requirement requirement) {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
@@ -50,6 +60,10 @@ public class RequirementService {
         }
     }
 
+    /**
+     * Das Löschen kann aufgrund eines Fremdschlüssel-Fehlers fehlschlagen,
+     * daher wird das Ergebnis als Boolean-Wert an das Bean zurückgegeben.
+     */
     public boolean delete(Integer requirementId) {
         if (requirementId == null) {
             return false;

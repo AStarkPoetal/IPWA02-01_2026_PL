@@ -4,4 +4,8 @@
        xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_4_0.xsd"
        bean-discovery-mode="annotated"
        version="4.0">
+    <!--
+        A CDI működéséhez szükséges minimális konfiguráció.
+        Az "annotated" mód azt jelenti, hogy csak annotált beaneket vesz figyelembe.
+    -->
 </beans>

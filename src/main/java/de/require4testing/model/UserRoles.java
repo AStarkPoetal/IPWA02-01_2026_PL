@@ -2,6 +2,7 @@ package de.require4testing.model;
 
 public final class UserRoles {
 
+    // Zentrale Rollen-Konstanten, damit Strings nicht überall manuell wiederholt werden müssen.
     public static final String TEST_MANAGER = "TM";
     public static final String REQUIREMENTS_ENGINEER = "RE";
     public static final String TEST_FALL_ENGINEER = "TFE";

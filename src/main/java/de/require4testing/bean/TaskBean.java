@@ -13,6 +13,10 @@ import java.util.List;
 
 @Named
 @SessionScoped
+/**
+ * Verwaltung von Task Bean. .
+ * Modelling von einfache Organisationsaufgaben.
+ */
 public class TaskBean implements Serializable {
 
     private final TaskService taskService = new TaskService();
@@ -24,6 +28,10 @@ public class TaskBean implements Serializable {
     @Inject
     private LoginBean loginBean;
 
+    /**
+     * Dasselbe Formular wird zum Erstellen neuer Tasks und zum Bearbeiten bestehender Tasks verwendet.
+     * Bei einem neuen Eintrag wird der Status automatisch auf "in_progress" gesetzt.
+     */
     public void createTask() {
         if (!loginBean.canCreateTask()) {
             addErrorMessage("You are not allowed to manage tasks.");
@@ -90,6 +98,9 @@ public class TaskBean implements Serializable {
         this.description = description;
     }
 
+    /**
+     * Abschluss von Task ist ein separate Methode, in UI is auch eindeutig unterschiedlich.
+     */
     public void markAsDone(Task task) {
         if (!loginBean.canManageTask(task)) {
             addErrorMessage("You are not allowed to manage tasks.");

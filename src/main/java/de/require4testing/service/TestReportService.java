@@ -11,6 +11,12 @@ import java.util.List;
 
 public class TestReportService {
 
+    /**
+     * Beim Speichern eines Reports werden mehrere Geschäftsregeln ausgeführt:
+     * Speichern des Reports selbst
+     * Bei „passed“ wird der Test auf „done“ gesetzt
+     * Die abgedeckten Requirements werden ebenfalls auf „done“ gesetzt.
+     */
     public void create(TestReport testReport) {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
@@ -39,6 +45,9 @@ public class TestReportService {
         }
     }
 
+    /**
+     * Die Reportliste lädt für die Ansicht auch den zugehörigen Test und Benutzer vorab.
+     */
     public List<TestReport> findAll() {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
@@ -55,6 +64,9 @@ public class TestReportService {
         }
     }
 
+    /**
+     * Vor dem Löschen erfolgt die Berechtigungsprüfung auf Bean-Ebene; hier wird nur noch die Datenbankoperation ausgeführt.
+     */
     public boolean delete(Integer testReportId) {
         if (testReportId == null) {
             return false;
@@ -84,6 +96,9 @@ public class TestReportService {
         }
     }
 
+    /**
+     * Der Test gilt nur bei einem „passed“-Ergebnis als abgeschlossen.
+     */
     private void markTestAsDone(EntityManager entityManager, TestReport testReport) {
         if (!"passed".equals(testReport.getStatus()) || testReport.getTest() == null) {
             return;
@@ -95,6 +110,10 @@ public class TestReportService {
         }
     }
 
+    /**
+     * Aus dem Report wird nachvollzogen, welche Requirements der Test abdeckt;
+     * anschließend werden diese auf den Status „done“ gesetzt.
+     */
     private void markCoveredRequirementsAsDone(EntityManager entityManager, TestReport testReport) {
         if (!"passed".equals(testReport.getStatus()) || testReport.getTest() == null) {
             return;

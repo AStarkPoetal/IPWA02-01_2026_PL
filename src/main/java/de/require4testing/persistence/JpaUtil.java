@@ -6,6 +6,7 @@ import jakarta.persistence.Persistence;
 
 public final class JpaUtil {
 
+    // Die EntityManagerFactory wird einmal erstellt, und alle Services beziehen daraus jeweils einen neuen EntityManager.
     private static final EntityManagerFactory ENTITY_MANAGER_FACTORY =
             Persistence.createEntityManagerFactory("require4testingPU");
 

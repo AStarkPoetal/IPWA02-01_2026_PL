@@ -4,11 +4,16 @@
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
 
+    <!--
+        JSF állapotmentés böngészőoldalon.
+        Ezzel stabilabb lett az oldalfrissítés és kevesebb a ViewExpired jellegű hiba.
+    -->
     <context-param>
         <param-name>jakarta.faces.STATE_SAVING_METHOD</param-name>
         <param-value>client</param-value>
     </context-param>
 
+    <!-- A JSF központi servletje kezeli az összes .xhtml kérést. -->
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>jakarta.faces.webapp.FacesServlet</servlet-class>
@@ -20,10 +25,12 @@
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
 
+    <!-- Az alkalmazás belépési pontja a dashboard oldal. -->
     <welcome-file-list>
         <welcome-file>dashboard.xhtml</welcome-file>
     </welcome-file-list>
 
+    <!-- Ha a JSF nézetállapot lejár, visszadobjuk a usert a dashboardra. -->
     <error-page>
         <exception-type>jakarta.faces.application.ViewExpiredException</exception-type>
         <location>/dashboard.xhtml</location>

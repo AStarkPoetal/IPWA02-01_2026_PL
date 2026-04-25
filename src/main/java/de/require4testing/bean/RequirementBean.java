@@ -13,6 +13,9 @@ import java.util.List;
 
 @Named
 @SessionScoped
+/**
+ * Verwaltung von Requirement Bean.
+ */
 public class RequirementBean implements Serializable {
 
     private final RequirementService requirementService = new RequirementService();
@@ -25,6 +28,11 @@ public class RequirementBean implements Serializable {
     @Inject
     private LoginBean loginBean;
 
+    /**
+     *  Dasselbe Formular wird sowohl für das Anlegen als auch für das Bearbeiten verwendet.
+     *  Wenn eine editingRequirementId vorhanden ist, wird ein bestehender Datensatz aktualisiert,
+     *  andernfalls wird ein neuer Datensatz erstellt.
+     */
     public void createRequirement() {
         if (!loginBean.canManageRequirement()) {
             addErrorMessage("You are not allowed to manage requirements.");
@@ -71,12 +79,16 @@ public class RequirementBean implements Serializable {
             return;
         }
 
+        // Die Daten des ausgewählten Datensatzes werden in die Formularfelder zurückgeladen.
         editingRequirementId = requirement.getId();
         name = requirement.getName();
         priority = requirement.getPriority();
         status = requirement.getStatus();
     }
 
+    /**
+     * Beim Abbruch der Bearbeitung wird auf den Zustand „leeres Erstellungsformular“ zurückgesetzt.
+     */
     public void cancelEdit() {
         editingRequirementId = null;
         name = "";

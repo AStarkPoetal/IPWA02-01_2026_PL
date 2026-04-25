@@ -10,6 +10,10 @@ import java.util.List;
 
 public class TestService {
 
+    /**
+     * Speichern eines neuen Tests.
+     * Für die Beziehungen zum Creator und zum zugewiesenen Tester werden verwaltete JPA-Referenzen verwendet.
+     */
     public void create(Test test) {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
@@ -36,6 +40,9 @@ public class TestService {
         }
     }
 
+    /**
+     * Die für die Ansicht benötigten Beziehungen werden vorab geladen, damit beim JSF-Rendering keine Lazy-Loading-Fehler auftreten.
+     */
     public List<Test> findAll() {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
@@ -73,6 +80,9 @@ public class TestService {
         }
     }
 
+    /**
+     * Vollständige Aktualisierung der Testentität.
+     */
     public void update(Test test) {
         EntityManager entityManager = JpaUtil.createEntityManager();
 
@@ -98,6 +108,9 @@ public class TestService {
         }
     }
 
+    /**
+     * Als zugewiesener Tester darf nur ein Benutzer mit der Rolle „T“ ausgewählt werden.
+     */
     public boolean assignTester(Integer testId, Integer testerId) {
         if (testId == null || testerId == null) {
             return false;

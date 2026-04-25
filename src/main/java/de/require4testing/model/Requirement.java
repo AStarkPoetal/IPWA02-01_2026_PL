@@ -13,6 +13,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "Requirement")
+/**
+ * Entität, die die zu testende Anforderung repräsentiert. Einer Anforderung können mehrere Testfälle zugeordnet sein.
+ */
 public class Requirement {
 
     @Id

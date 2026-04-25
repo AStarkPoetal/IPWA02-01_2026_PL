@@ -15,6 +15,15 @@ import java.io.Serializable;
 
 @Named
 @SessionScoped
+/**
+ * Bean von login und Zugriff -logic.
+ *
+ * Aufgaben:
+ * - User Validation aus dem DB
+ * - Verwaltung von Session - Zustand
+ * - Speicherung von aktuellen User
+ * - Rollenbasierte und rekordbasierte Zugriffskontrolle
+ */
 public class LoginBean implements Serializable {
 
     private final UserService userService = new UserService();
@@ -26,6 +35,11 @@ public class LoginBean implements Serializable {
     private User currentUser;
     private Integer currentUserId;
 
+    /**
+     * Bei der Anmeldung wird der Benutzer anhand der E-Mail-Adresse und des Passworts identifiziert.
+     * Nach erfolgreicher Anmeldung wird der Benutzer in der Session gespeichert.
+     * Eine fehlgeschlagene Anmeldung führt zu einer Fehlermeldung.
+     */
     public String login() {
         User authenticatedUser = userService.authenticate(email, password);
         if (authenticatedUser != null) {
@@ -43,6 +57,9 @@ public class LoginBean implements Serializable {
         return null;
     }
 
+    /**
+     * Bei Abmeldung jeden, in dem Session gespeichert, Daten wird auf null gesetzt (wieder).
+     */
     public String logout() {
         loggedIn = false;
         currentUser = null;
@@ -74,12 +91,17 @@ public class LoginBean implements Serializable {
     }
 
     public User getCurrentUser() {
+        // Falls die Session noch aktiv ist, das Benutzerobjekt jedoch nicht mehr im Speicher vorhanden ist,
+        // wird es anhand der gespeicherten ID erneut geladen.
         if (currentUser == null && loggedIn && currentUserId != null) {
             currentUser = userService.findById(currentUserId);
         }
         return currentUser;
     }
 
+    /**
+     * Hilfsmethode zur Überprüfung mehrerer Rollen.
+     */
     public boolean hasRole(String... roles) {
         User user = getCurrentUser();
         if (user == null || roles == null) {
@@ -123,6 +145,11 @@ public class LoginBean implements Serializable {
         return canAccessTest() && isOwnTest(test);
     }
 
+    /**
+     * Die folgenden Methoden erzeugen dynamische Informationstexte basierend auf der Benutzerrolle.
+     * Ziel ist es, in der Oberfläche klar darzustellen, welche Module und Aktionen verfügbar sind
+     * sowie welche Funktionen nur im Anzeige- oder eingeschränkten Modus verfügbar sind.
+     */
     public boolean canAssignTestCase(Test test) {
         return hasRole(UserRoles.TEST_MANAGER) && isOwnTest(test);
     }
@@ -233,6 +260,9 @@ public class LoginBean implements Serializable {
         return user != null ? user.getRole() : "-";
     }
 
+    /**
+     * Datensatzbasierte Prüfung: ob der betreffende Test vom aktuellen User erstellt wurde.
+     */
     private boolean isOwnTest(Test test) {
         User user = getCurrentUser();
         return user != null
@@ -265,6 +295,9 @@ public class LoginBean implements Serializable {
                 && test.getAssignedTester().getId() == user.getId();
     }
 
+    /**
+     * Mit dieser Methode senden wir eine Fehlermeldung an die JSF-Seite.
+     */
     private void addErrorMessage(String message) {
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, message, null));

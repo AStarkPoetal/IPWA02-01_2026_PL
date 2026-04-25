@@ -146,6 +146,11 @@ body {
     align-items: start;
 }
 
+.testcase-panel-grid {
+    grid-template-columns: minmax(320px, 0.9fr) minmax(620px, 2.1fr);
+    align-items: start;
+}
+
 .form-card,
 .table-card,
 .home-card {
@@ -257,6 +262,10 @@ textarea {
     width: 100%;
 }
 
+.testcase-list-card {
+    min-width: 0;
+}
+
 table {
     width: 100%;
     min-width: 460px;
@@ -342,6 +351,10 @@ th {
     }
 
     .tests-panel-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .testcase-panel-grid {
         grid-template-columns: 1fr;
     }
 

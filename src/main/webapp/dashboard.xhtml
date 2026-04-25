@@ -274,7 +274,7 @@ Dieser ist separat gehalten, um auch zwischengespeicherte alte CSS-Regeln sicher
                         <div class="permission-note">#{loginBean.testCasePermissionNote}</div>
                     </h:panelGroup>
 
-                    <div class="panel-grid tests-panel-grid">
+                    <div class="panel-grid testcase-panel-grid">
                         <div class="form-card #{loginBean.canManageTestCase() ? '' : 'locked-card'}">
                             <h4>Create TestCase</h4>
                             <div class="field-grid">
@@ -315,7 +315,7 @@ Dieser ist separat gehalten, um auch zwischengespeicherte alte CSS-Regeln sicher
                             </div>
                         </div>
 
-                        <div class="table-card">
+                        <div class="table-card testcase-list-card">
                             <h4>TestCase List</h4>
                             <h:panelGroup rendered="#{empty testCaseBean.testCases}">
                                 <div class="empty-state">No test cases created yet.</div>

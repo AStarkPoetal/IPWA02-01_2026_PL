@@ -26,6 +26,7 @@ public class TestCaseBean implements Serializable {
     private String name;
     private String description;
     private String expectedResult;
+    private String testSteps;
     private Integer selectedRequirementId;
     private Integer editingTestCaseId;
 
@@ -71,6 +72,7 @@ public class TestCaseBean implements Serializable {
         testCase.setName(name);
         testCase.setDescription(description);
         testCase.setExpectedResult(expectedResult);
+        testCase.setTestSteps(testSteps);
         testCase.setRequirement(selectedRequirement);
         testCase.setTest(selectedTest);
 
@@ -86,6 +88,7 @@ public class TestCaseBean implements Serializable {
         name = "";
         description = "";
         expectedResult = "";
+        testSteps = "";
         selectedRequirementId = null;
         editingTestCaseId = null;
     }
@@ -105,6 +108,7 @@ public class TestCaseBean implements Serializable {
         name = testCase.getName();
         description = testCase.getDescription();
         expectedResult = testCase.getExpectedResult();
+        testSteps = testCase.getTestSteps();
         selectedRequirementId = testCase.getRequirement() != null ? testCase.getRequirement().getId() : null;
     }
 
@@ -113,6 +117,7 @@ public class TestCaseBean implements Serializable {
         name = "";
         description = "";
         expectedResult = "";
+        testSteps = "";
         selectedRequirementId = null;
     }
 
@@ -190,6 +195,14 @@ public class TestCaseBean implements Serializable {
 
     public void setSelectedRequirementId(Integer selectedRequirementId) {
         this.selectedRequirementId = selectedRequirementId;
+    }
+
+    public String getTestSteps() {
+        return testSteps;
+    }
+
+    public void setTestSteps(String testSteps) {
+        this.testSteps = testSteps;
     }
 
     public List<TestCase> getTestCases() {

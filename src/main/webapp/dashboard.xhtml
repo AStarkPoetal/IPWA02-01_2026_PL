@@ -293,6 +293,10 @@ Dieser ist separat gehalten, um auch zwischengespeicherte alte CSS-Regeln sicher
                                                  disabled="#{not loginBean.canManageTestCase()}"
                                                  required="true" requiredMessage="Expected result is required." />
 
+                                <h:outputLabel value="Test Steps" for="testCaseTestSteps" />
+                                <h:inputTextarea id="testCaseTestSteps" value="#{testCaseBean.testSteps}" rows="4" cols="30"
+                                                 disabled="#{not loginBean.canManageTestCase()}" />
+
                                 <h:outputLabel value="Requirement" for="testCaseRequirement" />
                                 <h:selectOneMenu id="testCaseRequirement" value="#{testCaseBean.selectedRequirementId}" required="true"
                                                  disabled="#{not loginBean.canManageTestCase()}"
@@ -337,6 +341,10 @@ Dieser ist separat gehalten, um auch zwischengespeicherte alte CSS-Regeln sicher
                                 <h:column>
                                     <f:facet name="header">Expected Result</f:facet>
                                     #{testCase.expectedResult}
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Test Steps</f:facet>
+                                    #{empty testCase.testSteps ? '-' : testCase.testSteps}
                                 </h:column>
                                 <h:column>
                                     <f:facet name="header">Action</f:facet>

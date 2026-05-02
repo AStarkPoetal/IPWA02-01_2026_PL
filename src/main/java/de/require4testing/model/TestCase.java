@@ -32,6 +32,9 @@ public class TestCase {
     @Column(name = "ExpectedResult", nullable = false, columnDefinition = "TEXT")
     private String expectedResult;
 
+    @Column(name = "TestSteps", columnDefinition = "TEXT")
+    private String testSteps;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Requirement_id", nullable = false)
     private Requirement requirement;
@@ -43,11 +46,12 @@ public class TestCase {
     public TestCase() {
     }
 
-    public TestCase(int id, String name, String description, String expectedResult, Requirement requirement, Test test) {
+    public TestCase(int id, String name, String description, String expectedResult, String testSteps, Requirement requirement, Test test) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.expectedResult = expectedResult;
+        this.testSteps = testSteps;
         this.requirement = requirement;
         this.test = test;
     }
@@ -82,6 +86,14 @@ public class TestCase {
 
     public void setExpectedResult(String expectedResult) {
         this.expectedResult = expectedResult;
+    }
+
+    public String getTestSteps() {
+        return testSteps;
+    }
+
+    public void setTestSteps(String testSteps) {
+        this.testSteps = testSteps;
     }
 
     public Requirement getRequirement() {

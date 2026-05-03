@@ -232,7 +232,7 @@
           <mxGeometry height="26" width="140" y="104" as="geometry" />
         </mxCell>
         <mxCell id="75oAA3cP76G7LaY9jgDj-12" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="TestCase" vertex="1">
-          <mxGeometry height="182" width="166" x="294" y="249" as="geometry" />
+          <mxGeometry height="208" width="166" x="294" y="249" as="geometry" />
         </mxCell>
         <mxCell id="75oAA3cP76G7LaY9jgDj-13" parent="75oAA3cP76G7LaY9jgDj-12" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="ID: INT" vertex="1">
           <mxGeometry height="26" width="166" y="26" as="geometry" />
@@ -246,11 +246,14 @@
         <mxCell id="75oAA3cP76G7LaY9jgDj-57" parent="75oAA3cP76G7LaY9jgDj-12" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="ExpectedResult: TEXT" vertex="1">
           <mxGeometry height="26" width="166" y="104" as="geometry" />
         </mxCell>
-        <mxCell id="75oAA3cP76G7LaY9jgDj-16" parent="75oAA3cP76G7LaY9jgDj-12" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="Requirement_id: INT (FK)" vertex="1">
+        <mxCell id="g0cKIJvRP-4m-0TQM2-V-1" parent="75oAA3cP76G7LaY9jgDj-12" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="TestSteps: TEXT" vertex="1">
           <mxGeometry height="26" width="166" y="130" as="geometry" />
         </mxCell>
-        <mxCell id="75oAA3cP76G7LaY9jgDj-58" parent="75oAA3cP76G7LaY9jgDj-12" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="Test_id: INT (FK, optional)" vertex="1">
+        <mxCell id="75oAA3cP76G7LaY9jgDj-16" parent="75oAA3cP76G7LaY9jgDj-12" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="Requirement_id: INT (FK)" vertex="1">
           <mxGeometry height="26" width="166" y="156" as="geometry" />
+        </mxCell>
+        <mxCell id="75oAA3cP76G7LaY9jgDj-58" parent="75oAA3cP76G7LaY9jgDj-12" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="Test_id: INT (FK, optional)" vertex="1">
+          <mxGeometry height="26" width="166" y="182" as="geometry" />
         </mxCell>
         <mxCell id="75oAA3cP76G7LaY9jgDj-17" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Test" vertex="1">
           <mxGeometry height="156" width="170" x="298" y="756" as="geometry" />

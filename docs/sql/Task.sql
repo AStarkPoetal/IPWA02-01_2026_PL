@@ -21,7 +21,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '59d5c2a6-2d1a-11f1-95fc-8701702d904d:1-96';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '59d5c2a6-2d1a-11f1-95fc-8701702d904d:1-97';
 
 --
 -- Table structure for table `Task`
@@ -53,4 +53,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-02 21:41:44
+-- Dump completed on 2026-05-03 20:45:12

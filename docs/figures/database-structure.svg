@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <defs>
+    <style>
+      .title { font: 700 28px 'Segoe UI', Arial, sans-serif; fill: #12324a; }
+      .box-title { font: 700 20px 'Segoe UI', Arial, sans-serif; fill: #ffffff; }
+      .text { font: 16px 'Segoe UI', Arial, sans-serif; fill: #1f2937; }
+      .small { font: 14px 'Segoe UI', Arial, sans-serif; fill: #12324a; }
+      .line { stroke: #456b84; stroke-width: 2.5; fill: none; }
+      .entity { fill: #ffffff; stroke: #264b63; stroke-width: 2; rx: 12; ry: 12; }
+      .header { fill: #1f5f7a; rx: 12; ry: 12; }
+      .divider { stroke: #d7e3ec; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <text x="700" y="45" text-anchor="middle" class="title">Datenbankstruktur von Require4Testing</text>
+
+  <!-- User -->
+  <rect x="520" y="300" width="260" height="230" class="entity"/>
+  <rect x="520" y="300" width="260" height="46" class="header"/>
+  <text x="650" y="329" text-anchor="middle" class="box-title">User</text>
+  <line x1="520" y1="346" x2="780" y2="346" class="divider"/>
+  <text x="540" y="376" class="text">ID : INT</text>
+  <text x="540" y="404" class="text">Name : VARCHAR(30)</text>
+  <text x="540" y="432" class="text">Email : VARCHAR(100)</text>
+  <text x="540" y="460" class="text">Passwort : VARCHAR(5)</text>
+  <text x="540" y="488" class="text">Role : VARCHAR(3)</text>
+
+  <!-- Requirement -->
+  <rect x="520" y="110" width="260" height="190" class="entity"/>
+  <rect x="520" y="110" width="260" height="46" class="header"/>
+  <text x="650" y="139" text-anchor="middle" class="box-title">Requirement</text>
+  <line x1="520" y1="156" x2="780" y2="156" class="divider"/>
+  <text x="540" y="186" class="text">ID : INT</text>
+  <text x="540" y="214" class="text">Name : VARCHAR(30)</text>
+  <text x="540" y="242" class="text">Priority : VARCHAR(1)</text>
+  <text x="540" y="270" class="text">Status : VARCHAR(20)</text>
+
+  <!-- TestCase -->
+  <rect x="960" y="110" width="300" height="230" class="entity"/>
+  <rect x="960" y="110" width="300" height="46" class="header"/>
+  <text x="1110" y="139" text-anchor="middle" class="box-title">TestCase</text>
+  <line x1="960" y1="156" x2="1260" y2="156" class="divider"/>
+  <text x="980" y="186" class="text">ID : INT</text>
+  <text x="980" y="214" class="text">Name : VARCHAR(30)</text>
+  <text x="980" y="242" class="text">Description : TEXT</text>
+  <text x="980" y="270" class="text">ExpectedResult : TEXT</text>
+  <text x="980" y="298" class="text">Requirement_id : INT (FK)</text>
+  <text x="980" y="326" class="text">Test_id : INT (FK, optional)</text>
+
+  <!-- Test -->
+  <rect x="960" y="600" width="300" height="230" class="entity"/>
+  <rect x="960" y="600" width="300" height="46" class="header"/>
+  <text x="1110" y="629" text-anchor="middle" class="box-title">Test</text>
+  <line x1="960" y1="646" x2="1260" y2="646" class="divider"/>
+  <text x="980" y="676" class="text">ID : INT</text>
+  <text x="980" y="704" class="text">Name : VARCHAR(30)</text>
+  <text x="980" y="732" class="text">Status : VARCHAR(12)</text>
+  <text x="980" y="760" class="text">Created_by : INT (FK)</text>
+  <text x="980" y="788" class="text">Assigned_tester : INT (FK)</text>
+
+  <!-- TestReport -->
+  <rect x="960" y="380" width="300" height="190" class="entity"/>
+  <rect x="960" y="380" width="300" height="46" class="header"/>
+  <text x="1110" y="409" text-anchor="middle" class="box-title">TestReport</text>
+  <line x1="960" y1="426" x2="1260" y2="426" class="divider"/>
+  <text x="980" y="456" class="text">ID : INT</text>
+  <text x="980" y="484" class="text">Name : VARCHAR(30)</text>
+  <text x="980" y="512" class="text">Status : VARCHAR(10)</text>
+  <text x="980" y="540" class="text">Test_id : INT (FK)</text>
+  <text x="980" y="568" class="text">User_id : INT (FK)</text>
+
+  <!-- Task -->
+  <rect x="120" y="110" width="260" height="190" class="entity"/>
+  <rect x="120" y="110" width="260" height="46" class="header"/>
+  <text x="250" y="139" text-anchor="middle" class="box-title">Task</text>
+  <line x1="120" y1="156" x2="380" y2="156" class="divider"/>
+  <text x="140" y="186" class="text">ID : INT</text>
+  <text x="140" y="214" class="text">Name : VARCHAR(30)</text>
+  <text x="140" y="242" class="text">Description : TEXT</text>
+  <text x="140" y="270" class="text">Status : VARCHAR(13)</text>
+  <text x="140" y="298" class="text">User_id : INT (FK)</text>
+
+  <!-- Relations -->
+  <line x1="380" y1="205" x2="520" y2="380" class="line"/>
+  <text x="420" y="225" class="small">0..*</text>
+  <text x="500" y="360" class="small">1</text>
+
+  <line x1="780" y1="205" x2="960" y2="205" class="line"/>
+  <text x="800" y="195" class="small">1</text>
+  <text x="930" y="195" class="small">0..*</text>
+
+  <polyline points="780,500 860,500 860,715 960,715" class="line"/>
+  <text x="790" y="490" class="small">1</text>
+  <text x="930" y="705" class="small">0..*</text>
+  <text x="800" y="490" class="small">createdBy / assignedTester</text>
+
+  <line x1="780" y1="475" x2="960" y2="475" class="line"/>
+  <text x="795" y="465" class="small">1</text>
+  <text x="925" y="465" class="small">0..*</text>
+
+  <line x1="1110" y1="340" x2="1110" y2="380" class="line"/>
+  <text x="1128" y="356" class="small">0..*</text>
+  <text x="1128" y="374" class="small">1</text>
+
+  <line x1="1240" y1="600" x2="1240" y2="570" class="line"/>
+  <text x="1254" y="552" class="small">0..*</text>
+  <text x="1254" y="616" class="small">1</text>
+
+  <!-- Note -->
+  <rect x="95" y="820" width="1210" height="48" fill="#eef6fb" stroke="#c9dbe8" rx="10" ry="10"/>
+  <text x="700" y="850" text-anchor="middle" class="small">
+    Die Grafik zeigt die wichtigsten Tabellen und Fremdschluesselbeziehungen des Prototyps. Die Kardinalitaeten sind vereinfacht dargestellt.
+  </text>
+</svg>

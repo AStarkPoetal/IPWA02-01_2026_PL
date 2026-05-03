@@ -343,10 +343,6 @@ Dieser ist separat gehalten, um auch zwischengespeicherte alte CSS-Regeln sicher
                                     #{testCase.expectedResult}
                                 </h:column>
                                 <h:column>
-                                    <f:facet name="header">Test Steps</f:facet>
-                                    #{empty testCase.testSteps ? '-' : testCase.testSteps}
-                                </h:column>
-                                <h:column>
                                     <f:facet name="header">Action</f:facet>
                                     <div class="button-row">
                                         <h:commandButton value="Edit" action="#{testCaseBean.editTestCase(testCase)}" styleClass="secondary-button" immediate="true"

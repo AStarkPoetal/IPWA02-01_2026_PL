@@ -50,10 +50,40 @@ Zusätzlich liegen exportierte SQL-Schemadateien unter `docs/sql/`.
 
 ## Lokaler Start
 
+Voraussetzungen:
+
+- laufender MySQL-Dienst
+- laufender Tomcat-10-Dienst
+
+Vor dem ersten Start muss die Datenbank initialisiert werden. Die zugehörige Schema-Definition befindet sich unter:
+
+```text
+docs/sql/require4testing-schema.sql
+```
+
+Beispiel für die Initialisierung:
+
+```bash
+mysql -uroot require4testing < docs/sql/require4testing-schema.sql
+```
+
+Start der lokalen Dienste:
+
+```bash
+brew services start mysql
+brew services start tomcat@10
+```
+
 Build:
 
 ```bash
 mvn -DskipTests package
+```
+
+Der Build erzeugt die WAR-Datei unter:
+
+```text
+target/Require4Testing_2026_LP_IPWA02-01-1.0-SNAPSHOT.war
 ```
 
 Deploy auf Tomcat:
@@ -62,7 +92,7 @@ Deploy auf Tomcat:
 cp target/Require4Testing_2026_LP_IPWA02-01-1.0-SNAPSHOT.war /opt/homebrew/opt/tomcat@10/libexec/webapps/require4testing.war
 ```
 
-Aufruf:
+Aufruf im Browser:
 
 ```text
 http://localhost:8080/require4testing/

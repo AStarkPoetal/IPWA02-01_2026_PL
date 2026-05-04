@@ -1,6 +1,6 @@
 # Require4Testing
 
-Kompakter Prototyp einer Webanwendung zur Verwaltung von Requirements, Testfaellen, Testlaeufen, Testreports und Tasks.
+Kompakter Prototyp einer Webanwendung zur Verwaltung von Requirements, Testfaellen, Testlaeufen, Testreports und Tasks fuer manuelle Anwendertests.
 
 ## Technologie
 
@@ -13,14 +13,16 @@ Kompakter Prototyp einer Webanwendung zur Verwaltung von Requirements, Testfaell
 
 ## Funktionen
 
+- Einseitiges Dashboard mit integriertem Login
 - Login mit Rollen aus der Datenbank
 - Verwaltung von Requirements
 - Verwaltung von Testfaellen
+- Erfassung vereinfachter Testschritte als Freitext im Testfall
 - Anlegen von Testlaeufen
 - Zuordnung von Testfaellen und Tester:innen zu Testlaeufen
 - Erfassung von Testreports
 - Verwaltung von Tasks
-- Rollenbasierte Freigabe von Funktionen
+- Rollenbasierte Freigabe von Funktionen und Hinweisen
 
 ## Rollen
 
@@ -43,6 +45,8 @@ Wichtige Entitaeten:
 - `Test`
 - `TestReport`
 - `Task`
+
+Zusätzlich liegen exportierte SQL-Schemadateien unter `docs/sql/`.
 
 ## Lokaler Start
 
@@ -71,8 +75,8 @@ http://localhost:8080/require4testing/
 - `tfe@test.com` / `12345`
 - `t@test.com` / `12345`
 
-Weitere Tester-Accounts fuer Demo-Zwecke sind ebenfalls in der Datenbank vorhanden.
+Weitere Tester-Accounts fuer Demo-Zwecke (`tester01@test.com` bis `tester10@test.com`) sind ebenfalls in der Datenbank vorhanden.
 
 ## Hinweis
 
-Dies ist ein funktionaler Prototyp fuer das Modul Web-Development. Ausfuehrlichere Analyse, Designbeschreibung, UML und Screenshots werden separat in der Ausarbeitung dokumentiert.
+Dies ist ein funktionaler Prototyp fuer das Modul Web-Development. Ausfuehrlichere Analyse, Designbeschreibung, UML, Datenbankstruktur und Screenshots werden separat in der schriftlichen Ausarbeitung dokumentiert.
